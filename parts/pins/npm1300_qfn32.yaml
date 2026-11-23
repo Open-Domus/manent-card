@@ -1,0 +1,42 @@
+# nPM1300 QFN32 (QEAA) pin assignments.
+# This table was read for the nPM1304 on 2026-11-23 as page text, once, for the band. On the same
+# day the nPM1300 table was read through a summary of Nordic's page and its 32 names match this
+# one, pin for pin. Nordic was not found saying "pin compatible" in so many words.
+# https://docs.nordicsemi.com/r/bundle/ps_npm1300/page/pin.html
+# https://docs.nordicsemi.com/r/bundle/ps_npm1304/page/pin.html
+status: secondary
+package: {body: [5.0, 5.0, 0.85], pitch: 0.5, lead: [0.25, 0.4], exposed_pad: [3.5, 3.5]}
+pins:
+  1: {name: VOUT1}
+  2: {name: PVSS1}
+  3: {name: SW1}
+  4: {name: PVDD}
+  5: {name: SW2}
+  6: {name: PVSS2}
+  7: {name: GPIO0}
+  8: {name: GPIO1}
+  9: {name: GPIO2}
+  10: {name: GPIO3}
+  11: {name: GPIO4}
+  12: {name: VDDIO}
+  13: {name: SDA}
+  14: {name: SCL}
+  15: {name: SHPHLD}
+  16: {name: VSET2}
+  17: {name: VSET1}
+  18: {name: NTC}
+  19: {name: VBAT}
+  20: {name: VSYS}
+  21: {name: VBUS}
+  22: {name: VBUSOUT}
+  23: {name: CC1}
+  24: {name: CC2}
+  25: {name: LED0}
+  26: {name: LED1}
+  27: {name: LED2}
+  28: {name: LSIN1}
+  29: {name: LSOUT1}
+  30: {name: LSIN2}
+  31: {name: LSOUT2}
+  32: {name: VOUT2}
+  33: {name: AVSS}

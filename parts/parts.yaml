@@ -1,0 +1,222 @@
+# Single source for part bodies and BOM fields.
+# size: [length, width, height above the board], millimetres.
+# status: verified   = read on a manufacturer page or datasheet
+#         secondary  = distributor, press release or teardown summary
+#         unverified = from memory or an estimate; check before freezing
+# Entries shared with the ring and the band carry the status they have there.
+parts:
+  soc:
+    function: BLE system-on-chip
+    manufacturer: Nordic Semiconductor
+    mpn: nRF54L15-QFAA
+    package: QFN-48, 6 x 6 mm, 0.4 mm pitch
+    size: [6.0, 6.0, 0.85]
+    status: secondary        # dimension table read once as page text; see parts/pins
+    url: https://docs.nordicsemi.com/r/bundle/ps_nrf54l15/page/chapters/mec_spec.html
+  pmic:
+    function: Charger, 1.8 V buck, load switches, ship mode
+    manufacturer: Nordic Semiconductor
+    mpn: nPM1300-QEAA
+    package: QFN-32, 5 x 5 mm, 0.5 mm pitch
+    size: [5.0, 5.0, 0.85]
+    status: secondary        # same package as the nPM1304 of the band; see parts/pins
+    url: https://docs.nordicsemi.com/r/bundle/ps_npm1300/page/product_overview.html
+  flash:
+    function: 1 Gbit 1.8 V SPI NOR flash
+    manufacturer: Winbond
+    mpn: W25Q01NWZEIQ
+    package: WSON-8, 8 x 6 mm
+    size: [8.0, 6.0, 0.8]
+    status: secondary        # distributor listing: NOR, 8-WSON 8x6, 1.7 to 1.95 V. Height and pin order not read
+    url: https://www.winbond.com/hq/product/code-storage-flash/qspi-nor/w25q-nw
+  mic:
+    function: PDM MEMS microphone with wake-on-sound, bottom port
+    manufacturer: TDK InvenSense
+    mpn: T5838
+    package: LGA, bottom port
+    size: [2.65, 3.5, 0.98]  # long side across the board strip
+    status: verified
+    url: https://invensense.tdk.com/products/digital/t5838/
+  button:
+    function: Tactile switch pressed from the edge of the board
+    manufacturer: Panasonic
+    mpn: EVQ-P7 series (force and terminal shape to choose)
+    package: SMD side-push, 3.5 x 2.9
+    size: [3.5, 2.9, 1.35]
+    status: secondary        # series page: 3.5 x 2.9, height 1.35, travel 0.2. Drawing not read
+    url: https://na.industrial.panasonic.com/products/electromechanical/switches/light-touch-tactile-switches/series/79247
+  slide:
+    function: Slide switch, one pole two positions
+    manufacturer: Same Sky
+    mpn: SLW-66527511-SMT-TR
+    package: SMD gull wing, 6.65 x 2.75
+    size: [6.65, 2.75, 1.1]
+    status: secondary        # distributor summary; datasheet not read: which way the slider points is not confirmed
+    url: https://www.sameskydevices.com/product/switches/slide-switches/slw-66527511-smt-tr
+  vps:
+    function: Vibration sensor with a PDM output, hears the phone through its back
+    manufacturer: Knowles (sold by Syntiant)
+    mpn: V2S200D
+    package: LGA, 3.3 x 2.3
+    size: [3.3, 2.3, 0.93]
+    status: secondary        # product brief: size, supply, currents, clock. Pin numbers and land pattern not read
+    url: https://www.knowles.com/V2S
+  led:
+    function: Recording light, mounted upside down to shine through a hole in the board
+    manufacturer: Wuerth Elektronik
+    mpn: 156125RS75000
+    package: "reverse-mount 1205"
+    size: [3.2, 1.2, 1.1]
+    status: secondary        # family page: WL-SMRW 1205, 3.2 x 1.2 x 1.1, red, 110 mcd, 140 degrees. Datasheet not read
+    url: https://www.we-online.com/en/components/products/WL-SMRW
+  xtal32m:
+    function: 32 MHz crystal
+    manufacturer: Kyocera
+    mpn: to choose
+    package: "2016"
+    size: [2.0, 1.6, 0.5]
+    status: unverified       # package from Nordic's QFN48 reference; part and height not chosen
+    url: ""
+  xtal32k:
+    function: 32.768 kHz crystal
+    manufacturer: TXC
+    mpn: 9HT11-32.768KDZC-T
+    package: "2012"
+    size: [2.0, 1.2, 0.6]
+    status: secondary        # part from Nordic's reference list; height not checked
+    url: ""
+  inductor:
+    function: Buck inductor, 2.2 uH
+    manufacturer: Murata
+    mpn: to choose
+    package: "0806 (2016 metric)"
+    size: [2.0, 1.6, 1.0]
+    status: unverified
+    url: ""
+  protector:
+    function: Cell protection
+    manufacturer: ABLIC
+    mpn: S-82A1A
+    package: DFN-6 1.4 x 1.4
+    size: [1.4, 1.4, 0.5]
+    status: secondary        # body verified, height not extracted
+    url: https://www.ablic.com/en/doc/datasheet/battery_protection/S82A1A_E.pdf
+  antenna:
+    function: 2.4 GHz chip antenna
+    manufacturer: to choose
+    mpn: to choose
+    package: "1608 chip antenna"
+    size: [1.6, 0.8, 0.4]
+    status: unverified
+    url: ""
+  contact:
+    function: Contact pad on the bare face of the board, reached through a window in the front skin
+    manufacturer: none
+    mpn: board pad
+    package: round pad, 2 mm
+    size: [2.0, 2.0, 0.05]
+    status: verified
+    url: ""
+  nfet:
+    function: Small N-channel MOSFET
+    manufacturer: to choose
+    mpn: to choose
+    package: "DFN1006 class"
+    size: [1.0, 0.6, 0.4]
+    status: unverified
+    url: ""
+  testpad:
+    function: Test pad, bare copper
+    manufacturer: none
+    mpn: board pad
+    package: round pad, 1 mm
+    size: [1.0, 1.0, 0.05]
+    status: verified
+    url: ""
+  celltabs:
+    function: Pads the cell tabs are soldered to
+    manufacturer: none
+    mpn: board pads
+    package: two pads
+    size: [1.6, 4.4, 0.3]
+    status: unverified
+    url: ""
+  passive0603:
+    function: Bulk capacitor
+    manufacturer: generic
+    mpn: "0603"
+    package: "0603"
+    size: [1.6, 0.8, 0.8]
+    status: verified
+    url: ""
+  passive0201:
+    function: Radio and decoupling parts, bead, diode
+    manufacturer: generic
+    mpn: "0201"
+    package: "0201"
+    size: [0.6, 0.3, 0.3]
+    status: verified
+    url: ""
+  passive0402:
+    function: Resistor, capacitor, small inductor
+    manufacturer: generic
+    mpn: "0402"
+    package: "0402"
+    size: [1.0, 0.5, 0.55]
+    status: verified
+    url: ""
+
+# Flat lithium-polymer pouch cells, named by the trade size code (thickness, width, length).
+# size: [length, width, thickness]. No supplier has been asked: nobody has checked that these
+# sizes are sold, and the capacities are an estimate of about 80 mAh per cubic centimetre.
+# Plaud publishes 400 mAh for a card 3.0 mm thick, which is the same order.
+cells:
+  lp153080:
+    manufacturer: generic
+    mpn: "153080"
+    size: [80.0, 30.0, 1.5]
+    capacity_mah: 290
+    status: unverified
+    url: ""
+  lp153580:
+    manufacturer: generic
+    mpn: "153580"
+    size: [80.0, 35.0, 1.5]
+    capacity_mah: 335
+    status: unverified
+    url: ""
+  lp203080:
+    manufacturer: generic
+    mpn: "203080"
+    size: [80.0, 30.0, 2.0]
+    capacity_mah: 385
+    status: unverified
+    url: ""
+  lp203570:
+    manufacturer: generic
+    mpn: "203570"
+    size: [70.0, 35.0, 2.0]
+    capacity_mah: 390
+    status: unverified
+    url: ""
+  lp203580:
+    manufacturer: generic
+    mpn: "203580"
+    size: [80.0, 35.0, 2.0]
+    capacity_mah: 450
+    status: unverified
+    url: ""
+  lp203880:
+    manufacturer: generic
+    mpn: "203880"
+    size: [80.0, 38.0, 2.0]
+    capacity_mah: 485
+    status: unverified
+    url: ""
+  lp253580:
+    manufacturer: generic
+    mpn: "253580"
+    size: [80.0, 35.0, 2.5]
+    capacity_mah: 560
+    status: unverified
+    url: ""
