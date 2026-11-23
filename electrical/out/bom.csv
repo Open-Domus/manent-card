@@ -1,20 +1,21 @@
 References,Quantity,Value,Manufacturer,Part number,Package,Fitted,Notes
-U1,1,nPM1300,Nordic Semiconductor,nPM1300-QEAA-R7,"QFN-32 5x5, 0.5 mm pitch",yes,"The band's nPM1304 stops at 100 mA; this one charges at 32 to 800 mA and has the same 32 pins. Set about 225 mA, half the cell's capacity per hour. BUCK2 unused: VSET2 grounded as documented; SW2 open and VOUT2 grounded are not confirmed. LED0-2, GPIO2-4 left open: not confirmed. NTC grounded: set DISABLENTC in firmware"
+U1,1,nPM1300,Nordic Semiconductor,nPM1300-QEAA-R7,"QFN-32 5x5, 0.5 mm pitch",yes,"The band's nPM1304 stops at 100 mA; this one charges at 32 to 800 mA and has the same 32 pins. Set about 225 mA, half the cell's capacity per hour. BUCK2 unused: VSET2 grounded as documented; SW2 open and VOUT2 grounded are not confirmed. LED0-2, GPIO2-4 left open: not confirmed. CC1 and CC2 grounded: the input limit starts at 100 mA and firmware must raise it each time the charger is connected"
 L1,1,2.2uH,,to choose,0806,yes,Nordic asks for DCR under 0.4 ohm in 0806 (2.0 x 1.6 mm); part to choose
 R1,1,47k,,,0402,yes,Sets BUCK1 to 1.8 V at power-on
+R2,1,10k NTC,,to choose,0402,yes,"Thermistor, B about 3380 K, placed by the cell tabs: stops the charge when the closed card is too warm or too cold"
 C1,1,1uF 25V,,,0603,yes,Value from Nordic's reference list; which net each capacitor sits on is not confirmed
 C2 C7 C8,3,1uF,,,0402,yes,"Value from Nordic's reference list; which net each capacitor sits on is not confirmed | Load switch output, before the recording switch; value to confirm | Load switch output; value to confirm"
 C3 C4 C5 C10,4,10uF,,,0603,yes,Value from Nordic's reference list; which net each capacitor sits on is not confirmed | Buck output: at least 4 uF effective
 C6 C9 C25,3,100nF,,,0402,yes,VDDIO
-R2 R3 R11,3,10k,,,0402,yes,"Lets the SoC read the switch and wake on it. With the switch off the rail is grounded, so this pin cannot power the microphones"
+R3 R4 R13,3,10k,,,0402,yes,"Lets the SoC read the switch and wake on it. With the switch off the rail is grounded, so this pin cannot power the microphones"
 D1 D4 D5,3,5.5V bidirectional,Infineon,ESD230-B1-W0201,0201,yes,Fingers reach this pad. Its capacitance on a debug line is to confirm
 J1,1,charge +,,,2 mm pad,yes,"Copper on the bare face of the board, behind a window in the front skin, at one end only: a card laid on its charger the wrong way round touches nothing"
 J2,1,charge -,,,2 mm pad,yes,
 BT1,1,LiPo pouch 3.7 V,to choose,203580 class,,yes,Size and capacity depend on the card; see docs/space-budget.md
-R4,1,330,,,0402,yes,Protector supply filter
+R5,1,330,,,0402,yes,Protector supply filter
 U2,1,S-82A1A,ABLIC,S-82A1AAG-A6T5S (variant to confirm),DFN-6 1.4x1.4,yes,Fit only if the cell has no protection of its own; thresholds to match the charge voltage
-R5,1,0.25,,,0402,yes,"Overcurrent sense: about 200 mA trip (calculated, not from a datasheet)"
-R6,1,470,,,0402,yes,
+R6,1,0.05,,,0402,yes,"Overcurrent sense: about 1 A trip if the threshold is 50 mV (calculated, not from a datasheet). The band's 0.25 ohm would trip at 200 mA, below this card's 225 mA charge"
+R7,1,470,,,0402,yes,
 Q1 Q2 Q3 Q4,4,N-MOSFET,,to choose,,yes,"Discharge FET; a dual common-drain part in about 1x1 mm | Charge FET | Gate is the microphone rail: the light is on whenever the microphones have power. Vgs(th) under 1 V | Firmware can only add light, never remove the recording light"
 U3,1,nRF54L15,Nordic Semiconductor,nRF54L15-QFAA-R,"QFN-48 6x6, 0.4 mm pitch",yes,Pin 49 is the exposed pad: ground
 C11 C12 C13 C14 C22 C23 C24,7,100nF,,,0201,yes,"One next to each side's VDD pin. Value from Nordic's QFN48 reference; its place in the circuit is assumed from the CSP47 one | X7R, next to pin 7 of microphone A | X7R, next to pin 7 of microphone B | Next to the supply pin of the call sensor"
@@ -28,17 +29,18 @@ L3,1,2.7nH,Murata,LQP03HQ2N7B02,0201,yes,"Matching network: part from the refere
 C18,1,1.5pF,Murata,GJM0335C1E1R5WB01,0201,yes,"Matching network: part from the reference, order in the chain assumed"
 L4 L5,2,3.5nH,Murata,LQP03HQ3N5B02,0201,yes,"Matching network: part from the reference, order in the chain assumed"
 C19,1,2.0pF,Murata,GJM0335C1E2R0WB01,0201,yes,"Matching network: part from the reference, order in the chain assumed"
-R7,1,0,,,0201,yes,"Antenna tuning, series: value from measurement in a closed card, alone and on a phone"
+R8,1,0,,,0201,yes,"Antenna tuning, series: value from measurement in a closed card, alone and on a phone"
 C20 C21,2,tune,,,0201,no,"Antenna tuning, shunt"
 AE1,1,2.4 GHz,,to choose,1608 chip antenna,yes,Chip antenna or printed trace in the corner of the board; decided with the first radio measurements
 MK1 MK2,2,T5838,TDK InvenSense,MMICT5838-00-012,3.5x2.65x0.98 bottom port,yes,"Microphone A, at one end of the board, on data line PDM_DIN. No pull resistor on DATA. Board hole 0.5-1.0 mm under the port: the sound comes through the board | Microphone B, at the opposite end, on data line PDM_DIN2. No pull resistor on DATA. Board hole 0.5-1.0 mm under the port: the sound comes through the board"
-MK3,1,V2S200D,Knowles (Syntiant),V2S200D,3.3x2.3x0.93 LGA,yes,"Hears the phone through its back: the far side of a call. On the microphones' rail, so the switch and the light govern it too. Shares data line 1 with microphone A, on the other clock edge: SELECT levels to confirm. Pin numbers are the evaluation flex's, not the package's. 290 uA at this clock. Needs a firm path to the back skin: a pad of adhesive between its lid and the skin"
-U4,1,W25Q01NW,Winbond,W25Q01NWZEIQ,WSON-8 8x6,yes,"1 Gbit NOR at 1.7 to 1.95 V in 8-WSON 8x6, from a distributor listing; pin order and height not read. Exposed pad to ground is the usual practice, to confirm. Any 1.8 V serial NOR in this package fits"
-R8 R9 R10 R14,4,100k,,,0402,yes,Keeps the chip deselected while the rail rises | Termination in single-bit SPI to confirm | Off while the SoC is in reset
+MK3,1,V2S200D,Knowles (Syntiant),V2S200D,3.3x2.3x0.93 LGA,yes,"Hears the phone through its back: the far side of a call. On the microphones' rail, so the switch and the light govern it too. Shares data line 1 with microphone A, on the other clock edge: SELECT levels to confirm. Pin numbers are the evaluation flex's, not the package's. 290 uA at this clock. It measures how its own body shakes: the board under it must be fixed stiffly to the back skin, with a post or a bead of hard adhesive next to it"
+U4,1,W25Q256JW,Winbond,W25Q256JWEIQ,WSON-8 8x6,yes,"256 Mbit NOR at 1.8 V in 8-WSON 8x6, from a distributor listing; pin order and height not read. The 512 Mbit and 1 Gbit parts of the family fit the same pads and cost three and ten times as much. Needs four-byte addresses. Exposed pad to ground is the usual practice, to confirm. Any 1.8 V serial NOR in this package fits"
+R9 R10 R11 R16,4,100k,,,0402,yes,Keeps the chip deselected while the rail rises | Termination in single-bit SPI to confirm | Off while the SoC is in reset
 SW1,1,tactile,Panasonic,EVQ-P7 series,side-push 3.5x2.9x1.35,yes,Pressed from the edge of the card; pulled up inside the PMIC (SHPHLD). Force and terminal shape to choose
 D2,1,Schottky,Rohm,RB521ZS-30,0201,yes,Pin 1 is the cathode. Anode at the SoC: keeps the PMIC pull-up voltage off the 1.8 V pin
 SW2,1,record,Same Sky,SLW-66527511-SMT-TR,slide 6.65x2.75x1.1,yes,"The recording switch. It is in the microphones' supply itself: in the off position the microphones have no power and their rail is held at ground, whatever the firmware does"
+R12,1,1M,,,0402,yes,"Empties the rail when firmware opens the load switch with the recording switch on, so the light goes out"
 D3,1,red,Wuerth Elektronik,156125RS75000,reverse-mount 1205,yes,"Mounted upside down over a hole in the board, 1.3 mm from the edge: a clear insert in the corner of the card shows it on the front and on the edge. Which pad is the cathode is not read"
-R12 R13,2,3.3k,,,0402,yes,"About 0.5 mA whenever the microphones have power; adjust after a look through the front skin | Firmware blinks through this one: a mark taken, charging, an error"
+R14 R15,2,3.3k,,,0402,yes,"About 0.5 mA whenever the microphones have power; adjust after a look through the front skin | Firmware blinks through this one: a mark taken, charging, an error"
 J3,1,SWDIO,,,2 mm pad,yes,Service pad next to the charging pads: reachable with the card closed
 J4,1,SWDCLK,,,2 mm pad,yes,Service pad next to the charging pads: reachable with the card closed

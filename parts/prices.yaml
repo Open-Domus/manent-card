@@ -1,0 +1,54 @@
+# Prices in US dollars for one piece when a thousand are bought, read on 2026-11-23.
+# source: where the figure comes from. "estimate" means nobody was asked and no listing was read.
+# Listings are snapshots found through a search engine, not quotes. match: the bill-of-materials
+# value or part number the price applies to.
+parts:
+  - {match: nRF54L15, low: 1.81, high: 2.66, source: "Avnet 1.81 at 1000 (-R7); DigiKey 2.66 at 1000"}
+  - {match: nPM1300, low: 1.40, high: 2.60, source: "Avnet 1.40 at 1000; aggregator range up to 2.60"}
+  - {match: T5838, low: 1.33, high: 1.79, source: "Symmetry 1.33 at 1000; Avnet 1.79 at 5000"}
+  - {match: V2S200D, low: 2.54, high: 2.73, source: "DigiKey 2.73 at 1000, 2.54 on a reel"}
+  - {match: W25Q256JW, low: 1.62, high: 4.40, source: "two LCSC listings of the same part: 1.62 and 4.40"}
+  - {match: SLW-66527511-SMT-TR, low: 0.27, high: 0.32, source: "DigiKey, 0.27 euro at 1000"}
+  - {match: EVQ-P7 series, low: 0.18, high: 0.30, source: "DigiKey, EVQ-P7A01P 0.18 at 500"}
+  - {match: 156125RS75000, low: 0.10, high: 0.30, source: estimate}
+  - {match: S-82A1A, low: 0.20, high: 0.45, source: estimate}
+  - {match: N-MOSFET, low: 0.03, high: 0.08, source: estimate}
+  - {match: ESD230-B1-W0201, low: 0.04, high: 0.10, source: estimate}
+  - {match: 32MHz, low: 0.20, high: 0.40, source: estimate}
+  - {match: 9HT11-32.768KDZC-T, low: 0.25, high: 0.45, source: estimate}
+  - {match: 2.2uH, low: 0.08, high: 0.20, source: estimate}
+  - {match: 4.7uH, low: 0.03, high: 0.08, source: estimate}
+  - {match: 2.4 GHz, low: 0.15, high: 0.40, source: estimate}
+  - {match: RB521ZS-30, low: 0.02, high: 0.05, source: estimate}
+  - {match: 10k NTC, low: 0.02, high: 0.05, source: estimate}
+  - {match: ferrite bead, low: 0.01, high: 0.03, source: estimate}
+  - {match: Murata RF, low: 0.02, high: 0.05, source: "estimate, each of the five matching parts"}
+passive: {low: 0.003, high: 0.012, source: "estimate, each resistor or capacitor"}
+
+# Everything that is not on the bill of materials. Per card, at a thousand cards.
+rest:
+  - {item: "Board, four layers, 82.6 x 14 x 0.6 mm", low: 0.40, high: 0.90, source: estimate}
+  - {item: "Assembly, one side, about 80 placements, QFN and 0201, X-ray", low: 1.50, high: 3.00, source: "estimate; JLCPCB's standard service is the class needed (0201, 0.6 mm board)"}
+  - {item: "Cell, 2.0 x 35 x 80 mm, about 450 mAh, with leads", low: 1.50, high: 3.50, source: "estimate; one listing gives 1 to 2 for a stock 400 mAh cell at 1000"}
+  - {item: "Back skin, aluminium 0.5 mm, cut and anodised", low: 1.00, high: 2.50, source: estimate}
+  - {item: "Frame and front, glass-filled plastic, moulded", low: 0.50, high: 1.20, source: "estimate, tooling apart"}
+  - {item: "Clear insert, button cap, switch cap, gaskets, membranes, adhesives", low: 0.60, high: 1.50, source: estimate}
+  - {item: "Closing, programming and test by hand, 10 to 15 minutes in Italy", low: 5.00, high: 9.00, source: "estimate, at 30 to 36 dollars an hour"}
+  - {item: "Sleeve with its magnet ring, and a steel ring", low: 1.20, high: 2.50, source: estimate}
+  - {item: "Charger: cradle with four spring pins and a USB cable", low: 1.50, high: 3.00, source: estimate}
+  - {item: "Box and leaflet", low: 0.60, high: 1.50, source: estimate}
+
+# Paid once, whatever the number of cards.
+once:
+  - {item: "Mould for frame and front, and for the small plastic parts", low: 6000, high: 15000, source: estimate}
+  - {item: "Radio approval in Europe (RED): tests and file, no pre-approved module on the board", low: 5000, high: 10000, source: estimate}
+  - {item: "Cell: transport test report, usually the maker's; custom size set-up", low: 0, high: 2000, source: estimate}
+  - {item: "Test fixture: spring pins on the four pads and the test pads", low: 300, high: 1000, source: estimate}
+
+# The first ten cards, built to learn.
+prototypes:
+  - {item: "Development kits: nRF54L15, nPM1300, T5838 and V2S200D evaluation boards", low: 150, high: 350, source: estimate}
+  - {item: "Ten boards assembled by a prototype service, parts included", low: 350, high: 700, source: estimate}
+  - {item: "Sample cells, ten to twenty, custom size", low: 100, high: 400, source: estimate}
+  - {item: "Shells: machined aluminium skins, printed frames and fronts", low: 200, high: 600, source: estimate}
+  - {item: "Spring-pin charger and programming jig, made by hand", low: 50, high: 150, source: estimate}

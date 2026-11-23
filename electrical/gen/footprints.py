@@ -157,7 +157,7 @@ def footprint_of(c) -> str | None:
     if c.sym.virtual:
         return None
     by_value = {"nRF54L15": "QFN-48-1EP_6x6mm_P0.4mm_EP4.6x4.6mm", "nPM1300": "QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm",
-                "W25Q01NW": "WSON-8-1EP_8x6mm_P1.27mm_EP3.4x4.3mm", "T5838": "T5838", "V2S200D": "V2S200D", "S-82A1A": "DFN-6_1414"}
+                "W25Q256JW": "WSON-8-1EP_8x6mm_P1.27mm_EP3.4x4.3mm", "T5838": "T5838", "V2S200D": "V2S200D", "S-82A1A": "DFN-6_1414"}
     if c.value in by_value:
         return by_value[c.value]
     sym, pkg = c.sym.name, c.fields.get("Package", "")

@@ -166,7 +166,7 @@
 		(property "MPN" "V2S200D" (at 76.20 96.52 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Manufacturer" "Knowles (Syntiant)" (at 76.20 96.52 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Package" "3.3x2.3x0.93 LGA" (at 76.20 96.52 0) (effects (font (size 1.27 1.27)) (hide yes)))
-		(property "Note" "Hears the phone through its back: the far side of a call. On the microphones' rail, so the switch and the light govern it too. Shares data line 1 with microphone A, on the other clock edge: SELECT levels to confirm. Pin numbers are the evaluation flex's, not the package's. 290 uA at this clock. Needs a firm path to the back skin: a pad of adhesive between its lid and the skin" (at 76.20 96.52 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Note" "Hears the phone through its back: the far side of a call. On the microphones' rail, so the switch and the light govern it too. Shares data line 1 with microphone A, on the other clock edge: SELECT levels to confirm. Pin numbers are the evaluation flex's, not the package's. 290 uA at this clock. It measures how its own body shakes: the board under it must be fixed stiffly to the back skin, with a post or a bead of hard adhesive next to it" (at 76.20 96.52 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(pin "2" (uuid "4a178467-f72c-51a6-8909-8c7d22b85db0"))
 		(pin "1" (uuid "846a6633-8961-560e-ba71-676512e4e26e"))
 		(pin "6" (uuid "5320ef67-414c-5904-ab5d-61d0b1bd027c"))

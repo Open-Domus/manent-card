@@ -61,9 +61,9 @@ cell's own leakage decides.
 
 ## What the flash holds
 
-One 256-byte slot holds 100 ms of speech, so 1 Gbit is 524,288 slots: 14 h 34 min
+One 256-byte slot holds 100 ms of speech, so 256 Mbit is 131,072 slots: 3 h 38 min
 recorded with the phone out of reach. With the phone in reach the audio leaves as it is recorded
-and the flash never fills. The cell outlasts the flash several times over.
+and the flash never fills. The 512 Mbit and 1 Gbit parts fit the same pads, for two and four times as long.
 
 ## Charging
 

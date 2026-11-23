@@ -20,9 +20,9 @@
     "gap over the parts": 0.15,
     "tallest part (button)": 1.35,
     "board": 0.6,
-    "adhesive and gaskets": 0.1,
+    "adhesive and gaskets": 0.25,
     "front skin": 0.5,
-    "left over": 0.3
+    "left over": 0.15
    },
    "cell_stack": {
     "back skin": 0.5,
@@ -54,8 +54,8 @@
     "board": 1156.4,
     "large_parts_and_keepouts": 231.4,
     "free": 925.0,
-    "small_parts": 56,
-    "small_parts_need": 47.3,
+    "small_parts": 58,
+    "small_parts_need": 48.8,
     "share_of_free": 0.05
    },
    "mic_distance": 76.6,
@@ -343,16 +343,16 @@
    ],
    "ok": false,
    "problems": [
-    "the board and its parts are 0.2 too thick (button, 1.35 tall)"
+    "the board and its parts are 0.35 too thick (button, 1.35 tall)"
    ],
    "board_stack": {
     "back skin": 0.5,
     "gap over the parts": 0.15,
     "tallest part (button)": 1.35,
     "board": 0.6,
-    "adhesive and gaskets": 0.1,
+    "adhesive and gaskets": 0.25,
     "front skin": 0.5,
-    "left over": -0.2
+    "left over": -0.35
    },
    "cell_stack": {
     "back skin": 0.5,
@@ -384,8 +384,8 @@
     "board": 1156.4,
     "large_parts_and_keepouts": 231.4,
     "free": 925.0,
-    "small_parts": 56,
-    "small_parts_need": 47.3,
+    "small_parts": 58,
+    "small_parts_need": 48.8,
     "share_of_free": 0.05
    },
    "mic_distance": 76.6,

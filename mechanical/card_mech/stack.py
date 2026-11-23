@@ -25,7 +25,7 @@ CELL_TABS = 1.5       # beyond the cell body, for its tabs
 CELL_TOP = 0.10       # between the swollen cell and the skin above it
 RIB = 0.8             # wall of the frame between the board and the cell
 PART_GAP = 0.15       # between the tallest part and the back skin
-FACE_GAP = 0.10       # between the board and the front skin: adhesive, microphone gaskets
+FACE_GAP = 0.25       # between the board and the front skin: adhesive, microphone gaskets and membranes
 PART_SPACING = 0.15   # between the land patterns of small parts
 FINE_PITCH_MARGIN = 0.30
 PACKING = 0.50        # share of the free board area that small parts may take; the rest is for tracks
@@ -44,7 +44,7 @@ def body_of(c) -> str | None:
     name, value, pkg = c.sym.name, c.value, c.fields.get("Package", "")
     if c.sym.virtual:
         return None
-    by_value = {"nRF54L15": "soc", "nPM1300": "pmic", "W25Q01NW": "flash", "T5838": "mic", "V2S200D": "vps", "S-82A1A": "protector"}
+    by_value = {"nRF54L15": "soc", "nPM1300": "pmic", "W25Q256JW": "flash", "T5838": "mic", "V2S200D": "vps", "S-82A1A": "protector"}
     by_symbol = {"SW": "button", "SPDT": "slide", "LED": "led", "ANTENNA": "antenna", "NMOS": "nfet",
                  "CONTACT": "contact", "PAD": "testpad", "CELL": "celltabs", "XTAL4": "xtal32m"}
     if value in by_value:

@@ -49,9 +49,10 @@ def test_the_switch_is_the_only_supply_of_the_microphones():
     # switch, the light's gate, and the resistor through which the SoC reads the switch.
     # Nothing that supplies it.
     on_rail = sorted(c.sym.name for c in comps if "VMIC" in c.nets.values() and not c.sym.virtual)
-    assert on_rail == ["C", "C", "C", "NMOS", "R", "SPDT", "T5838", "T5838", "V2S200D"]
-    reader = next(c for c in comps if c.sym.name == "R" and "VMIC" in c.nets.values())
-    assert set(reader.nets.values()) == {"VMIC", "MIC_ON"}
+    assert on_rail == ["C", "C", "C", "NMOS", "R", "R", "SPDT", "T5838", "T5838", "V2S200D"]
+    others = sorted(next(n for n in c.nets.values() if n != "VMIC") for c in comps
+                    if c.sym.name == "R" and "VMIC" in c.nets.values())
+    assert others == ["GND", "MIC_ON"]            # a pull-down, and the SoC reading the switch
 
 
 def test_one_interface_hears_the_owner_and_the_phone_together():
@@ -75,11 +76,25 @@ def test_firmware_can_also_cut_the_microphones():
     assert names["LSOUT1"] == "VMIC_SW" and names["GPIO1"] == "MIC_EN"
 
 
-def test_flash_holds_a_working_day():
+def test_flash_holds_a_long_meeting():
     flash = next(c for c in build() if c.sym.name == "SPI-NOR-8")
-    assert flash.value == "W25Q01NW"
-    slots = 2 ** 30 // 8 // 256                    # one 256-byte slot holds 100 ms of speech
-    assert slots / 10 / 3600 > 14
+    assert flash.value == "W25Q256JW"
+    slots = 2 ** 28 // 8 // 256                    # one 256-byte slot holds 100 ms of speech
+    assert slots / 10 / 3600 > 3.5
+
+
+def test_the_cell_protection_lets_the_charge_current_through():
+    comps = build()
+    sense = next(c for c in comps if c.sym.name == "R" and set(c.nets.values()) == {"CELL_N", "SENSE"})
+    trip_ma = 50 / float(sense.value)              # 50 mV assumed threshold
+    assert trip_ma > 2 * 225
+
+
+def test_the_charger_reads_a_thermistor():
+    comps = build()
+    pmic = next(c for c in comps if c.value == "nPM1300")
+    assert {p.name: pmic.nets[p.number] for p in pmic.sym.pins}["NTC"] == "NTC"
+    assert any("NTC" in c.value for c in comps if c.sym.name == "R")
 
 
 def test_both_nordic_chips_are_the_qfn_versions():

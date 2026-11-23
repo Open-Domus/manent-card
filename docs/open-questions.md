@@ -10,7 +10,7 @@ are the answers, what each rests on, and what would overturn it. None has been t
 | Does the card hear the far side of a phone call | Yes: a Knowles V2S200D on the switched rail | It is what a card on a phone is for, and the part speaks the microphones' interface at their voltage and clock | The sensor hearing too little through a phone's back |
 | A switch that starts the recording, or a card that listens whenever it is on | Switch | A meeting is started on purpose, and a switch shows its state to everyone for as long as it lasts | Nothing found |
 | Switch in the listening supply, or read by firmware | In the supply | Off cannot be overridden, at no cost in parts. The price: the phone cannot start a recording | Owners asking to start from the phone |
-| Thickness | 3.5 mm | Meets 30 hours even if the power budget is five times too low; 3.0 mm would not | A bench that confirms the budget: then 3.0 mm with a lower button |
+| Thickness | 3.5 mm | Meets 30 hours even if the power budget is five times too low; 3.0 mm would not | A bench that confirms the budget: then 3.0 mm with a lower button and a 0.4 mm board |
 | Magnets in the card, or in a sleeve | Sleeve | The ring is as wide as the card and would lie on the cell | A thinner cell and a card wider than a payment card: a different product |
 | Pads on the front, or on the back | Front | The bare face of the board is already there: no springs. Each pad has a protection diode | Pads wearing or corroding in a pocket |
 | Where the light is | 1.3 mm from the edge, with a clear insert round the corner | Seen on the front and on the edge, so also with the card face down | The insert carrying too little light to either face |
@@ -18,7 +18,7 @@ are the answers, what each rests on, and what would overturn it. None has been t
 | One microphone or two | Two, on two data lines | One may be covered; the first line pairs microphone A with the call sensor | Nothing found |
 | Power chip | nPM1300 | Charges this cell in about 2.5 hours instead of 5; same 32 pins as the band's nPM1304 | The two pin tables differing when read from the package figures |
 | Charge current | 225 mA, half the capacity per hour | Gentle on a thin cell; the chip could give more | The cell's datasheet |
-| Flash | 1 Gbit NOR, W25Q01NWZEIQ | A working day away from the phone, in the band's footprint | The part being two dies or out of production: any 1.8 V NOR in WSON 8x6 fits |
+| Flash | 256 Mbit NOR, W25Q256JWEIQ | Three and a half hours away from the phone for about 1.6 dollars; 1 Gbit is listed at about 15 | Owners who leave the phone behind: the 512 Mbit and 1 Gbit parts fit the same pads |
 | Slide switch | Same Sky SLW-66527511-SMT-TR, 1.1 mm | The lowest found | Its slider pointing up from the board instead of out of the edge |
 | Button | Panasonic EVQ-P7, 1.35 mm | Side push on the board surface, no cut-out, fits 3.5 mm | Going to 3.0 mm: then EVP-AN |
 | Light | Wuerth 156125RS75000, reverse-mount | Reverse-mount parts this low exist only in this length | Its height over the board being more than 1.1 |
@@ -42,7 +42,7 @@ the order in which a wrong answer would cost most:
 | EVP-AN: what "0.7 mm, half dive" means on a 0.6 mm board | Panasonic's drawing |
 | 156125RS75000: height over the board, hole size, land pattern, cathode, brightness at 0.5 mA | Wuerth's datasheet |
 | nPM1300 against nPM1304: both pin tables from the package figures; register differences for the firmware's driver | Nordic's product specifications |
-| W25Q01NWZEIQ: one die or two, height, exposed pad, standby current, address width | Winbond's datasheet |
+| W25Q256JWEIQ: height, exposed pad, standby current, pin order | Winbond's datasheet |
 | nRF54L15: whether it has one PDM interface or two | Nordic's instantiation table |
 | ESD230 on SWDIO and SWDCLK: its capacitance against the debug clock | Infineon's datasheet, Nordic's guidance |
 | Cell: a 2.0 x 35 x 80 mm part with drawing, capacity, protection, tab position, charge current, and what bending it tolerates | quotes from two makers of thin cells to order |
@@ -77,5 +77,6 @@ frame and the two skins, their joint and seal; the switch slot, the button cap, 
 insert of the light, the microphone gaskets and membranes, the pad under the call sensor;
 the sleeve with its magnets; the charger; the antenna; firmware changes against
 `mnemo-band` (pins, the nPM1300 driver, two data lines, a second audio channel for calls,
-the recording switch, 1 Gbit buffer, ship mode, factory reset); compliance (radio,
+the recording switch, four-byte flash addresses, ship mode, factory reset, and the rules in
+`review.md`); compliance (radio,
 lithium cell).

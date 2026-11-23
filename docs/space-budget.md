@@ -31,20 +31,20 @@ are trade size codes with estimated capacities, not a supplier's drawing.
 | gap over the parts | 0.15 | adhesive | 0.1 |
 | tallest part (button) | 1.35 | cell, swollen | 2.16 |
 | board | 0.6 | gap over the cell | 0.1 |
-| adhesive and gaskets | 0.1 | front skin | 0.5 |
+| adhesive and gaskets | 0.25 | front skin | 0.5 |
 | front skin | 0.5 | left over | 0.14 |
-| left over | 0.3 |  |  |
+| left over | 0.15 |  |  |
 
 - **Room for the cell**: 81.3 x 36.1 x 2.13 (thickness before swelling).
 - **Cell**: 203580, 80.0 x 35.0 x 2.0, about 450 mAh. Spare: 1.3 in length, 1.1 in width, 0.14 in height.
-- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 231.4; the 56 small parts need 47.3, 5% of what is free.
+- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 231.4; the 58 small parts need 48.8, 5% of what is free.
 - **Microphones**: 76.6 apart.
 - **Mass** (estimate): aluminium back skin 6.2 g, glass-filled plastic frame and front 4.6 g, board 1.88 g, cell 10.35 g: about 23.1 g.
 - Drawings: [from the phone side](../mechanical/out/plan-A.svg), [section](../mechanical/out/section-A.svg).
 
 ## Envelope B-thin: 85.6 x 54.0 x 3.0
 
-**Result: does not fit: the board and its parts are 0.2 too thick (button, 1.35 tall).**
+**Result: does not fit: the board and its parts are 0.35 too thick (button, 1.35 tall).**
 
 | Through the board | Thickness | Through the cell | Thickness |
 | --- | --- | --- | --- |
@@ -52,13 +52,13 @@ are trade size codes with estimated capacities, not a supplier's drawing.
 | gap over the parts | 0.15 | adhesive | 0.1 |
 | tallest part (button) | 1.35 | cell, swollen | 1.62 |
 | board | 0.6 | gap over the cell | 0.1 |
-| adhesive and gaskets | 0.1 | front skin | 0.5 |
+| adhesive and gaskets | 0.25 | front skin | 0.5 |
 | front skin | 0.5 | left over | 0.18 |
-| left over | -0.2 |  |  |
+| left over | -0.35 |  |  |
 
 - **Room for the cell**: 81.3 x 36.1 x 1.67 (thickness before swelling).
 - **Cell**: 153580, 80.0 x 35.0 x 1.5, about 335 mAh. Spare: 1.3 in length, 1.1 in width, 0.18 in height.
-- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 231.4; the 56 small parts need 47.3, 5% of what is free.
+- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 231.4; the 58 small parts need 48.8, 5% of what is free.
 - **Microphones**: 76.6 apart.
 - **Mass** (estimate): aluminium back skin 6.2 g, glass-filled plastic frame and front 4.3 g, board 1.88 g, cell 7.71 g: about 20.2 g.
 - Drawings: [from the phone side](../mechanical/out/plan-B.svg), [section](../mechanical/out/section-B.svg).

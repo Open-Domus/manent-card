@@ -26,7 +26,7 @@ where it was put, so anyone at the table can see whether it is on.
 | A light other people can see whenever anything that listens has power | as the band |
 | Hears both sides of a phone call when it is on the phone | chosen: see "Phone calls" |
 | At least 30 hours of recording on a charge; 40 is the stretch goal | chosen: what Plaud publishes for its Note; a working week |
-| A working day of recording kept with the phone out of reach | chosen |
+| A long meeting, three and a half hours, kept with the phone out of reach | chosen: the card lives next to its phone; more costs ten times as much |
 | 16 kHz mono, Opus at about 16 kbit/s encoded on the card | `mnemo-band` |
 | Bluetooth LE; store and forward; one phone; no server of ours; no Wi-Fi | `mnemo-band` |
 | Firmware the owner can rebuild and load | as the ring |
@@ -87,7 +87,7 @@ contact pads --TVS-- VBUS --> [ nPM1300 ] <--> cell (+ protection)
             +-|<|-> wake      |  |  |
                          SPI --+  |  +-- matching -- tuning -- antenna
                           v       +--PDM--> microphone A + call sensor; microphone B
-                     1 Gbit flash
+                    256 Mbit flash
 ```
 
 One logic rail at 1.8 V, as on the ring: the microphones accept nothing higher.
@@ -98,7 +98,7 @@ One logic rail at 1.8 V, as on the ring: the microphones accept nothing higher.
 | --- | --- | --- | --- | --- |
 | Microcontroller | Nordic nRF54L15, QFN48 | 6 x 6 x 0.85 | The firmware targets it; its PDM clock suits the microphone | as on the band: pin table read once |
 | Power | Nordic nPM1300, QFN32 | 5 x 5 x 0.85 | Charges at 32 to 800 mA; the band's nPM1304 stops at 100 mA, five hours for this cell | pin names match the nPM1304's, pin for pin; read through a summary |
-| Flash | Winbond W25Q01NWZEIQ, WSON-8 | 8 x 6 x 0.8 | 1 Gbit holds about 14 h 34 min not yet uploaded | distributor listing; height and pin order not read |
+| Flash | Winbond W25Q256JWEIQ, WSON-8 | 8 x 6 x 0.8 | 256 Mbit holds about 3 h 38 min not yet uploaded, for a tenth of the price of 1 Gbit | distributor listing; height and pin order not read |
 | Microphones | 2 x TDK T5838 | 3.5 x 2.65 x 0.98 | Already planned by the firmware; sound enters through the board | verified |
 | Call sensor | Knowles V2S200D | 3.3 x 2.3 x 0.93 | Hears the phone through its back; PDM, 1.8 V, 290 uA at the microphones' clock | product brief; pin numbers and land pattern not read |
 | Recording switch | Same Sky SLW-66527511-SMT-TR | 6.65 x 2.75 x 1.1 | The lowest slide switch found; in the listening supply | distributor summary; which way the slider points not confirmed |
@@ -141,9 +141,14 @@ serves both. `electrical/gen/checks.py` enforces these rules on every build.
 - **The switch is in the supply.** It costs nothing more than wiring it to a pin would, and
   it turns "the firmware promises" into "the copper cannot". Its off position grounds the
   rail, so the light goes out at once and the pin that reads the rail cannot feed it.
-- **1 Gbit of flash, no more.** At 16 kbit/s an hour of speech is 7.2 MB. Plaud's 64 GB
-  would hold a year of it; the card needs the day it may spend away from the phone. The
-  part has the band's footprint and pin order, and sits behind load switch 2.
+- **256 Mbit of flash.** At 16 kbit/s an hour of speech is 7.2 MB. Plaud's 64 GB would hold
+  a year of it. The card lives next to its phone and sends as it records, so the flash
+  only bridges the gaps: 256 Mbit is 3 h 38 min. The 1 Gbit part chosen at first is listed
+  at about 15 dollars, more than the rest of the board, and was out of stock; this one is
+  about 1.6. The 512 Mbit and 1 Gbit parts fit the same pads if a buyer wants the day.
+  It sits behind load switch 2.
+- **A thermistor by the cell tabs.** The charger reads it and stops when the closed card is
+  too warm or too cold. The band grounds that pin.
 - **Bluetooth only.** At an assumed 400 kbit/s an hour of audio crosses in about two and a
   half minutes, and it crosses while it is being recorded if the phone is in reach. Wi-Fi
   would bring a second radio and its current for a need the card does not have.
@@ -174,7 +179,8 @@ would be the lesser product, so this card has the sensor too.
 
 It is a Knowles V2S200D, a vibration sensor that speaks the microphones' own digital
 language at their own voltage and clock. It sits in the middle of the board, on the face
-towards the phone, with a pad of adhesive between its lid and the back skin. It hangs on
+towards the phone. It measures how its own body shakes, so the board under it is fixed
+stiffly to the back skin with a post beside it. It hangs on
 the same switched rail as the microphones: the switch that silences them silences it, and
 the light that follows them follows it.
 
@@ -221,14 +227,15 @@ between the call sensor and the phone with anything soft.
   skin 1.5 mm behind it.
 
 Whether it all fits is in [space-budget.md](space-budget.md). In short: at 3.5 mm
-everything fits with a cell of about 450 mAh and 0.3 mm to spare over the tallest part.
+everything fits with a cell of about 450 mAh and 0.15 mm to spare over the tallest part.
 
 ### Why 3.5 mm
 
 Plaud's card is 3.0. At 3.0 the cell still fits, 1.5 mm thick and about 335 mAh, and the
-slide switch found is low enough; the button, 1.35 mm tall, is 0.2 too much. Panasonic
-lists a lower one of the same outline (EVP-AN, 0.7 mm, sunk in a cut-out of the board)
-whose drawing could not be read. So 3.0 is one part away.
+slide switch found is low enough. The board side is 0.35 too thick: the button is 1.35 mm
+tall, and the gap for the microphone gaskets takes 0.25. Panasonic lists a lower button of
+the same outline (EVP-AN, 0.7 mm, sunk in a cut-out of the board) whose drawing could not
+be read; with it and a 0.4 mm board the thin card closes. So 3.0 is two changes away.
 
 It is still not chosen. The power budget may be wrong by the factor that separates it from
 what Plaud publishes, about five. At five times the budget's current the 450 mAh cell

@@ -17,6 +17,8 @@ chosen from listings whose datasheets have not been read.
 | Design document: requirements, architecture, decisions | [docs/design.md](docs/design.md) |
 | Does it fit? Card, the two stacks, cell, board area | [docs/space-budget.md](docs/space-budget.md) |
 | How long does it last? | [docs/power-budget.md](docs/power-budget.md) |
+| What it costs to make | [docs/cost-estimate.md](docs/cost-estimate.md) |
+| Design review: what was checked, what was wrong, what is at risk | [docs/review.md](docs/review.md) |
 | What was decided and why, what is unknown, and what would settle it | [docs/open-questions.md](docs/open-questions.md) |
 | Parts with sizes and how far each is verified | [parts/parts.yaml](parts/parts.yaml) |
 | Circuit, as data | [electrical/gen/design.py](electrical/gen/design.py) |

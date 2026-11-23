@@ -177,7 +177,7 @@ def build() -> list[Component]:
 
     # ---- power (as on the ring) --------------------------------------------------------
     add(PMIC, "nPM1300", "power", by_name(PMIC, {
-        "VBUS": "VBUS", "VBUSOUT": "VBUSOUT", "CC1": "GND", "CC2": "GND", "VBAT": "VBAT", "NTC": "GND",
+        "VBUS": "VBUS", "VBUSOUT": "VBUSOUT", "CC1": "GND", "CC2": "GND", "VBAT": "VBAT", "NTC": "NTC",
         "VSYS": "VSYS", "PVDD": "VSYS", "VDDIO": "V1V8", "AVSS": "GND", "PVSS1": "GND", "PVSS2": "GND",
         "VSET1": "VSET1", "VSET2": "GND", "SHPHLD": "BTN_N", "SW1": "SW1", "VOUT1": "V1V8",
         "VOUT2": "GND", "LSIN1": "V1V8", "LSOUT1": "VMIC_SW", "LSIN2": "V1V8", "LSOUT2": "VFLASH",
@@ -186,10 +186,13 @@ def build() -> list[Component]:
         note="The band's nPM1304 stops at 100 mA; this one charges at 32 to 800 mA and has the same 32 pins. "
              "Set about 225 mA, half the cell's capacity per hour. "
              "BUCK2 unused: VSET2 grounded as documented; SW2 open and VOUT2 grounded are not confirmed. "
-             "LED0-2, GPIO2-4 left open: not confirmed. NTC grounded: set DISABLENTC in firmware")
+             "LED0-2, GPIO2-4 left open: not confirmed. CC1 and CC2 grounded: the input limit starts at 100 mA and "
+             "firmware must raise it each time the charger is connected")
     add(L, "2.2uH", "power", ("SW1", "V1V8"), mpn="to choose", package="0806",
         note="Nordic asks for DCR under 0.4 ohm in 0806 (2.0 x 1.6 mm); part to choose")
     res("47k", "VSET1", "GND", "power", note="Sets BUCK1 to 1.8 V at power-on")
+    res("10k NTC", "NTC", "GND", "power", mpn="to choose",
+        note="Thermistor, B about 3380 K, placed by the cell tabs: stops the charge when the closed card is too warm or too cold")
     cap("1uF 25V", "VBUS", "power", pkg="0603", note=UNVERIFIED_CAPS)
     cap("1uF", "VBUSOUT", "power", note=UNVERIFIED_CAPS)
     cap("10uF", "VBAT", "power", pkg="0603", note=UNVERIFIED_CAPS)
@@ -220,7 +223,8 @@ def build() -> list[Component]:
                                                  "VM": "VM", "CO": "PROT_CO", "DO": "PROT_DO"}),
         mpn="S-82A1AAG-A6T5S (variant to confirm)", mfr="ABLIC", package="DFN-6 1.4x1.4",
         note="Fit only if the cell has no protection of its own; thresholds to match the charge voltage")
-    res("0.25", "CELL_N", "SENSE", "power", note="Overcurrent sense: about 200 mA trip (calculated, not from a datasheet)")
+    res("0.05", "CELL_N", "SENSE", "power", note="Overcurrent sense: about 1 A trip if the threshold is 50 mV (calculated, not from a datasheet). "
+        "The band's 0.25 ohm would trip at 200 mA, below this card's 225 mA charge")
     res("470", "VM", "GND", "power")
     add(NFET, "N-MOSFET", "power", {"1": "PROT_DO", "2": "SENSE", "3": "FET_MID"}, mpn="to choose",
         note="Discharge FET; a dual common-drain part in about 1x1 mm")
@@ -282,15 +286,18 @@ def build() -> list[Component]:
         note="Hears the phone through its back: the far side of a call. On the microphones' rail, so the switch and "
              "the light govern it too. Shares data line 1 with microphone A, on the other clock edge: SELECT levels "
              "to confirm. Pin numbers are the evaluation flex's, not the package's. 290 uA at this clock. "
-             "Needs a firm path to the back skin: a pad of adhesive between its lid and the skin")
+             "It measures how its own body shakes: the board under it must be fixed stiffly to the back skin, "
+             "with a post or a bead of hard adhesive next to it")
     cap("100nF", "VMIC", "audio", pkg="0201", note="Next to the supply pin of the call sensor")
 
     # ---- flash ---------------------------------------------------------------------------
-    add(FLASH, "W25Q01NW", "storage", by_name(FLASH, {
+    add(FLASH, "W25Q256JW", "storage", by_name(FLASH, {
         "VCC": "VFLASH", "GND": "GND", "EP": "GND", "/CS": "FLASH_CS", "CLK": "SPI_SCK", "DI(IO0)": "SPI_SDO",
         "DO(IO1)": "SPI_SDI", "/WP(IO2)": "FLASH_IO2", "/HOLD(IO3)": "FLASH_IO3"}),
-        mpn="W25Q01NWZEIQ", mfr="Winbond", package="WSON-8 8x6",
-        note="1 Gbit NOR at 1.7 to 1.95 V in 8-WSON 8x6, from a distributor listing; pin order and height not read. "
+        mpn="W25Q256JWEIQ", mfr="Winbond", package="WSON-8 8x6",
+        note="256 Mbit NOR at 1.8 V in 8-WSON 8x6, from a distributor listing; pin order and height not read. "
+             "The 512 Mbit and 1 Gbit parts of the family fit the same pads and cost three and ten times as much. "
+             "Needs four-byte addresses. "
              "Exposed pad to ground is the usual practice, to confirm. Any 1.8 V serial NOR in this package fits")
     cap("100nF", "VFLASH", "storage")
     res("100k", "FLASH_CS", "VFLASH", "storage", note="Keeps the chip deselected while the rail rises")
@@ -306,6 +313,7 @@ def build() -> list[Component]:
         note="The recording switch. It is in the microphones' supply itself: in the off position the microphones "
              "have no power and their rail is held at ground, whatever the firmware does")
     add(FLAG, "PWR_FLAG", "ui", ("VMIC",))
+    res("1M", "VMIC", "GND", "ui", note="Empties the rail when firmware opens the load switch with the recording switch on, so the light goes out")
     res("10k", "VMIC", "MIC_ON", "ui",
         note="Lets the SoC read the switch and wake on it. With the switch off the rail is grounded, "
              "so this pin cannot power the microphones")

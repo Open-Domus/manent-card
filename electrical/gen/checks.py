@@ -80,6 +80,7 @@ def lint() -> list[str]:
     feeds = [c.ref for c in comps if not c.sym.virtual and "VMIC" in c.nets.values() and
              (any(p.etype == "power_out" and c.nets.get(p.number) == "VMIC" for p in c.sym.pins)
               or (len(c.sym.pins) == 2 and set(c.nets.values()) & (RAILS - {"GND", "VMIC"})))]
+    # a pull-down may sit on the rail; nothing that could lift it may
     out += [f"{ref} can feed the microphone rail around the switch" for ref in feeds]
     switch = [c for c in comps if c.sym.name == "SPDT"]
     if len(switch) != 1 or switch[0].nets != {"2": "VMIC", "1": "VMIC_SW", "3": "GND"}:

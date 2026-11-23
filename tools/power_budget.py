@@ -12,7 +12,7 @@ BUCK_EFF = 0.85       # assumed efficiency of the 1.8 V buck at these loads
 USABLE = 0.80         # share of the rated capacity counted on
 TARGET_HOURS, STRETCH_HOURS = 30, 40
 CHARGE_C = 0.5        # charge current as a share of the capacity per hour: gentle on a thin cell
-SLOT_SECONDS, SLOT_BYTES, FLASH_BITS = 0.1, 256, 2 ** 30
+SLOT_SECONDS, SLOT_BYTES, FLASH_BITS = 0.1, 256, 2 ** 28
 
 # (kind, name, low, nominal, high, source). "rail": milliwatts at the 1.8 V rail. "cell": milliamps from the cell.
 RECORDING = [
@@ -98,9 +98,9 @@ def main():
             f"high draw, and in ship mode ({SHIP_UA} uA, the power chip's documented figure) for years: in both cases the",
             "cell's own leakage decides.", "",
             "## What the flash holds", "",
-            f"One {SLOT_BYTES}-byte slot holds {SLOT_SECONDS * 1000:.0f} ms of speech, so 1 Gbit is {FLASH_BITS // 8 // SLOT_BYTES:,} slots: "
+            f"One {SLOT_BYTES}-byte slot holds {SLOT_SECONDS * 1000:.0f} ms of speech, so 256 Mbit is {FLASH_BITS // 8 // SLOT_BYTES:,} slots: "
             f"{int(flash_hours())} h {round(flash_hours() % 1 * 60)} min", "recorded with the phone out of reach. With the phone in reach the audio leaves as it is recorded",
-            "and the flash never fills. The cell outlasts the flash several times over.", "",
+            "and the flash never fills. The 512 Mbit and 1 Gbit parts fit the same pads, for two and four times as long.", "",
             "## Charging", "",
             f"The power chip is set to {cell * CHARGE_C:.0f} mA, half the cell's capacity per hour: about {1 / CHARGE_C * 1.25:.1f} hours from empty",
             "(constant current plus the tail, estimated). The chip can give 800 mA; what the cell accepts is on its",
