@@ -45,9 +45,22 @@ for key, e in rep["envelopes"].items():
     o += [f"- **Board**: {e['board'][0]} x {e['board'][1]}, {a['board']} mm2. Large parts and keep-outs take {a['large_parts_and_keepouts']}; "
           f"the {a['small_parts']} small parts need {a['small_parts_need']}, {a['share_of_free']:.0%} of what is free.",
           f"- **Microphones**: {e['mic_distance']} apart.",
-          f"- **Mass** (estimate): aluminium back skin {m['back_skin_g']} g, glass-filled plastic frame and front {m['frame_and_front_g']} g, "
+          f"- **Slider**: stands {e['slider_proud']} out of the bottom of its hollow in the edge; {S.MIN_PROUD} is the least accepted.",
+          f"- **Mass** (estimate): two aluminium skins {m['skins_g']} g, glass-filled plastic frame and antenna end {m['frame_g']} g, "
           f"board {m['board_g']} g, cell {m['cell_g']} g: about {m['total_g']} g.",
           f"- Drawings: [from the phone side](../mechanical/out/plan-{key}.svg), [section](../mechanical/out/section-{key}.svg).", ""]
+b = rep["envelopes"][rep["adopted"]]["bending"]
+from mechanical.card_mech.checks import BEND_N, BEND_SPAN  # noqa: E402
+o += ["## Bending", "",
+      f"A load of {BEND_N:.0f} N in the middle of the card, held at two lines {BEND_SPAN:.0f} apart: somebody sitting on it, gently.",
+      "\"Together\" is the two skins working as one beam, which needs them glued to the frame and the rib all",
+      "round without slipping. \"Alone\" is each skin bending by itself. The truth is between the two, and",
+      "nobody has asked a cell maker what radius a pouch tolerates.", "",
+      "| Skins | Together: sag | radius | Alone: sag | radius |", "| --- | --- | --- | --- | --- |"]
+o += [f"| {name} | {v['together']['sag_mm']} | {v['together']['radius_mm'] / 1000:.1f} m | {v['alone']['sag_mm']} | {v['alone']['radius_mm'] / 1000:.2f} m |"
+      for name, v in b.items()]
+o += ["", "Glued well, two aluminium skins bend about five times less than one. Not glued, neither is of any",
+      "use: the joint between skins and frame is the part of the shell that matters most.", ""]
 o += ["## What thickness and board width buy", "",
       "A payment card's outline. The cell is the best in `parts/parts.yaml` that fits; the table does not",
       "check that the parts fit under the back skin, which is what stops the 3.0 mm card above: its button is 1.35 tall.", "",

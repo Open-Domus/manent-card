@@ -155,5 +155,28 @@ def test_placed_parts_stay_close_to_what_they_connect_to():
         assert min(((x - a) ** 2 + (y - b) ** 2) ** 0.5 for x, y in own for a, b in vdd) < 3.0, cap
 
 
+def test_protection_diodes_sit_at_their_pads():
+    import json
+    path = NETLIST.with_name("board.json")
+    if not path.exists():
+        pytest.skip("run `make board` first")
+    parts = json.loads(path.read_text())["parts"]
+    pad = {p["nets"]["1"]: (p["x"], p["y"]) for p in parts if p["footprint"].startswith("Pad_Contact")}
+    diodes = [p for p in parts if p["fields"].get("MPN") == "ESD230-B1-W0201"]
+    assert len(diodes) == 3
+    for d in diodes:
+        x, y = pad[d["nets"]["1"]]
+        assert abs(d["x"] - x) < 2.5 and abs(d["y"] - y) < 2.5, d["ref"]
+
+
+def test_call_sensor_pins_are_the_datasheets():
+    sensor = next(c for c in build() if c.value == "V2S200D")
+    names = {p.number: p.name for p in sensor.sym.pins}
+    assert names == {"1": "VDD", "2": "CLK", "3": "GND", "4": "GND", "5": "SELECT", "6": "DATA"}
+    assert sensor.nets["5"] == "VMIC"              # SELECT high: speaks on the rising edge
+    mic_a = next(c for c in build() if c.value == "T5838" and "PDM_DIN" in c.nets.values())
+    assert mic_a.nets["2"] == "GND"                # the microphone on the same line takes the other edge
+
+
 def test_no_vibration_motor_and_no_screen():
     assert not any(w in c.value.lower() for c in build() for w in ("haptic", "motor", "display", "oled"))

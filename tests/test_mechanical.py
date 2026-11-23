@@ -1,7 +1,7 @@
 import pytest
 
 from card_mech import stack as S
-from card_mech.checks import circuit_bodies, envelope_report, size_sweep
+from card_mech.checks import bending, circuit_bodies, envelope_report, size_sweep
 from card_mech.params import ADOPTED, ENVELOPES
 
 
@@ -52,7 +52,38 @@ def test_only_contact_pads_are_on_the_face_under_the_front_skin(reports):
 
 def test_button_and_switch_are_on_the_edge_of_the_card(reports):
     edge = {pl["part"]: pl["y"] for pl in reports[ADOPTED]["placed"] if pl["part"] in ("button", "slide")}
-    assert len(edge) == 2 and all(y <= 0.2 for y in edge.values())
+    assert len(edge) == 2 and all(y <= 0.3 for y in edge.values())
+
+
+def test_the_slider_can_be_reached_with_a_finger(reports):
+    assert reports[ADOPTED]["slider_proud"] >= S.MIN_PROUD
+    flush = envelope_report("A", ENVELOPES["A"].resized(scoop=0.0))
+    assert any("slider" in p for p in flush["problems"])     # without the hollow it cannot
+
+
+def test_both_skins_stop_short_of_the_antenna():
+    p = ENVELOPES[ADOPTED]
+    antenna = next(pl for pl in S.layout(p) if pl.part == "antenna")
+    assert antenna.x + antenna.w + p.wall + p.board_gap < p.antenna_window - 3.0
+
+
+def test_two_metal_skins_are_much_stiffer_than_one():
+    p = ENVELOPES[ADOPTED]
+    two, one = bending(p), bending(p, e_front=8.0)
+    assert two["together"]["stiffness_Nmm2"] > 4 * one["together"]["stiffness_Nmm2"]
+    assert two["together"]["radius_mm"] > 3000
+    # Not glued to the frame the skins are useless: the model must say so, not hide it.
+    assert two["alone"]["sag_mm"] > 20 * two["together"]["sag_mm"]
+
+
+def test_the_board_is_held_where_it_is_pressed_and_where_it_listens(reports):
+    posts = [pl for pl in reports[ADOPTED]["placed"] if pl["name"].startswith("post")]
+    pads = [pl for pl in reports[ADOPTED]["placed"] if pl["part"] == "contact"]
+    sensor = next(pl for pl in reports[ADOPTED]["placed"] if pl["part"] == "vps")
+    centre = lambda pl: (pl["x"] + pl["w"] / 2, pl["y"] + pl["h"] / 2)
+    near = lambda a, b, d: abs(centre(a)[0] - centre(b)[0]) <= d and abs(centre(a)[1] - centre(b)[1]) <= d
+    assert all(any(near(pad, post, 5.5) for post in posts) for pad in pads)
+    assert any(near(sensor, post, 4.0) for post in posts)
 
 
 def test_every_part_of_the_circuit_is_in_the_model(reports):

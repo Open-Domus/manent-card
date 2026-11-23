@@ -8,8 +8,8 @@ parts:
   - {match: T5838, low: 1.33, high: 1.79, source: "Symmetry 1.33 at 1000; Avnet 1.79 at 5000"}
   - {match: V2S200D, low: 2.54, high: 2.73, source: "DigiKey 2.73 at 1000, 2.54 on a reel"}
   - {match: W25Q256JW, low: 1.62, high: 4.40, source: "two LCSC listings of the same part: 1.62 and 4.40"}
-  - {match: SLW-66527511-SMT-TR, low: 0.27, high: 0.32, source: "DigiKey, 0.27 euro at 1000"}
-  - {match: EVQ-P7 series, low: 0.18, high: 0.30, source: "DigiKey, EVQ-P7A01P 0.18 at 500"}
+  - {match: SSSS811101, low: 0.30, high: 0.70, source: "estimate; a lower Same Sky switch is listed at 0.27 euro"}
+  - {match: EVQP7J01P, low: 0.18, high: 0.30, source: "DigiKey, its sibling EVQ-P7A01P 0.18 at 500"}
   - {match: 156125RS75000, low: 0.10, high: 0.30, source: estimate}
   - {match: S-82A1A, low: 0.20, high: 0.45, source: estimate}
   - {match: N-MOSFET, low: 0.03, high: 0.08, source: estimate}
@@ -30,8 +30,8 @@ rest:
   - {item: "Board, four layers, 82.6 x 14 x 0.6 mm", low: 0.40, high: 0.90, source: estimate}
   - {item: "Assembly, one side, about 80 placements, QFN and 0201, X-ray", low: 1.50, high: 3.00, source: "estimate; JLCPCB's standard service is the class needed (0201, 0.6 mm board)"}
   - {item: "Cell, 2.0 x 35 x 80 mm, about 450 mAh, with leads", low: 1.50, high: 3.50, source: "estimate; one listing gives 1 to 2 for a stock 400 mAh cell at 1000"}
-  - {item: "Back skin, aluminium 0.5 mm, cut and anodised", low: 1.00, high: 2.50, source: estimate}
-  - {item: "Frame and front, glass-filled plastic, moulded", low: 0.50, high: 1.20, source: "estimate, tooling apart"}
+  - {item: "Two skins, aluminium 0.5 mm, cut and anodised", low: 2.00, high: 4.50, source: estimate}
+  - {item: "Frame with the antenna end, glass-filled plastic, moulded", low: 0.40, high: 1.00, source: "estimate, tooling apart"}
   - {item: "Clear insert, button cap, switch cap, gaskets, membranes, adhesives", low: 0.60, high: 1.50, source: estimate}
   - {item: "Closing, programming and test by hand, 10 to 15 minutes in Italy", low: 5.00, high: 9.00, source: "estimate, at 30 to 36 dollars an hour"}
   - {item: "Sleeve with its magnet ring, and a steel ring", low: 1.20, high: 2.50, source: estimate}
@@ -40,7 +40,7 @@ rest:
 
 # Paid once, whatever the number of cards.
 once:
-  - {item: "Mould for frame and front, and for the small plastic parts", low: 6000, high: 15000, source: estimate}
+  - {item: "Mould for the frame, and for the small plastic parts", low: 6000, high: 15000, source: estimate}
   - {item: "Radio approval in Europe (RED): tests and file, no pre-approved module on the board", low: 5000, high: 10000, source: estimate}
   - {item: "Cell: transport test report, usually the maker's; custom size set-up", low: 0, high: 2000, source: estimate}
   - {item: "Test fixture: spring pins on the four pads and the test pads", low: 300, high: 1000, source: estimate}
@@ -50,5 +50,5 @@ prototypes:
   - {item: "Development kits: nRF54L15, nPM1300, T5838 and V2S200D evaluation boards", low: 150, high: 350, source: estimate}
   - {item: "Ten boards assembled by a prototype service, parts included", low: 350, high: 700, source: estimate}
   - {item: "Sample cells, ten to twenty, custom size", low: 100, high: 400, source: estimate}
-  - {item: "Shells: machined aluminium skins, printed frames and fronts", low: 200, high: 600, source: estimate}
+  - {item: "Shells: machined aluminium skins, printed frames", low: 200, high: 600, source: estimate}
   - {item: "Spring-pin charger and programming jig, made by hand", low: 50, high: 150, source: estimate}

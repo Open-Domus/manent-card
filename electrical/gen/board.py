@@ -137,6 +137,11 @@ def place(comps, card):
         for num, net in c.nets.items():
             if not net or net in GROUND or net not in pads:
                 continue
+            if c.sym.name == "TVS":            # a protection diode belongs at the pad it protects
+                at_pad = [q for q in pads[net] if by_ref[q[2]].sym.name == "CONTACT"]
+                if at_pad:
+                    out[num] = at_pad[0]
+                    continue
             same = [q for q in pads[net] if by_ref[q[2]].sheet == c.sheet] or pads[net]
             chips = [q for q in same if len(by_ref[q[2]].sym.pins) > 2] or same
             out[num] = min(chips, key=lambda q: claims.get((net, q[:2]), 0))

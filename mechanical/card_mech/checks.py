@@ -6,6 +6,8 @@ from . import stack as S
 from .params import ADOPTED, ENVELOPES, CardParams
 
 PLASTIC, ALUMINIUM, FR4 = 1.4, 2.7, 1.85   # g/cm3; the plastic is glass-filled
+E_ALUMINIUM, E_PLASTIC = 70.0, 8.0         # GPa
+BEND_N, BEND_SPAN = 100.0, 70.0            # a load in the middle of the card held at its two ends
 CELL_G_PER_MAH = 0.023                     # estimate
 ELECTRONICS_G = 0.6                        # parts and solder, estimate
 
@@ -37,6 +39,22 @@ def best_cell(p: CardParams, parts) -> str | None:
     fits = [k for k, c in parts["cells"].items()
             if c["size"][0] <= room["length"] and c["size"][1] <= room["width"] and c["size"][2] <= room["thickness"]]
     return max(fits, key=lambda k: parts["cells"][k]["capacity_mah"]) if fits else None
+
+
+def bending(p: CardParams, e_front: float = E_ALUMINIUM, e_back: float = E_ALUMINIUM) -> dict:
+    """How the card bends along its length under BEND_N across BEND_SPAN. Two bounds: the two skins
+    working as one beam (the frame and the rib hold them apart without slipping), and each alone."""
+    zb, zf = p.back / 2, p.height - p.front / 2
+    a_b, a_f = e_back * p.back, e_front * p.front
+    z0 = (a_b * zb + a_f * zf) / (a_b + a_f)
+    together = (a_b * (zb - z0) ** 2 + a_f * (zf - z0) ** 2 + e_back * p.back ** 3 / 12 + e_front * p.front ** 3 / 12) * 1000 * p.width
+    alone = (e_back * p.back ** 3 + e_front * p.front ** 3) / 12 * 1000 * p.width
+    moment = BEND_N * BEND_SPAN / 4
+    out = {}
+    for name, ei in (("together", together), ("alone", alone)):
+        out[name] = {"stiffness_Nmm2": round(ei), "sag_mm": round(BEND_N * BEND_SPAN ** 3 / (48 * ei), 2),
+                     "radius_mm": round(ei / moment)}
+    return out
 
 
 def envelope_report(key: str, p: CardParams | None = None) -> dict:
@@ -89,15 +107,24 @@ def envelope_report(key: str, p: CardParams | None = None) -> dict:
                 "spare_width": round(room["width"] - c["size"][1], 2),
                 "spare_height": round((room["thickness"] - c["size"][2]) * (1 + S.SWELL), 2)}
 
+    # The slider must stand out of the bottom of its hollow in the edge.
+    slide = next(pl for pl in placed if pl.part == "slide")
+    proud = round(parts["parts"]["slide"]["actuator"] - slide.y - (p.wall + p.board_gap - p.scoop), 2)
+    if proud < S.MIN_PROUD:
+        problems.append(f"the slider stands only {proud} out of its hollow")
+    if p.scoop >= p.wall:
+        problems.append("the hollow for the slider goes through the frame")
+
     mics = [pl for pl in placed if pl.part == "mic"]
     distance = math.dist(*[m.centre for m in mics])
     if distance < S.MIN_MIC_DISTANCE:
         problems.append("the microphones are too close together")
 
     cl, cw, ch = p.cavity
-    back_cm3 = p.length * p.width * p.back / 1000          # the back skin is aluminium
-    rest_cm3 = (p.length * p.width * p.height - cl * cw * ch + S.RIB * cl * ch) / 1000 - back_cm3
-    back_g, rest_g = back_cm3 * ALUMINIUM, rest_cm3 * PLASTIC
+    window = p.antenna_window * (p.wall + p.board_gap + p.board_w + S.RIB)   # plastic instead of aluminium, each skin
+    skins_cm3 = (p.length * p.width - window) * (p.back + p.front) / 1000
+    rest_cm3 = (p.length * p.width * p.height - cl * cw * ch + S.RIB * cl * ch) / 1000 - skins_cm3
+    back_g, rest_g = skins_cm3 * ALUMINIUM, rest_cm3 * PLASTIC
     board_g = L * W * p.board_t / 1000 * FR4 + ELECTRONICS_G
     cell_g = cell["capacity_mah"] * CELL_G_PER_MAH if cell else 0.0
     return {
@@ -114,8 +141,9 @@ def envelope_report(key: str, p: CardParams | None = None) -> dict:
         "area": {"board": round(L * W, 1), "large_parts_and_keepouts": round(taken, 1), "free": round(free, 1),
                  "small_parts": len(small), "small_parts_need": round(need, 1),
                  "share_of_free": round(need / free, 2)},
-        "mic_distance": round(distance, 1),
-        "mass": {"back_skin_g": round(back_g, 1), "frame_and_front_g": round(rest_g, 1),
+        "mic_distance": round(distance, 1), "slider_proud": proud,
+        "bending": {"two aluminium skins": bending(p), "aluminium back, plastic front": bending(p, e_front=E_PLASTIC)},
+        "mass": {"skins_g": round(back_g, 1), "frame_g": round(rest_g, 1),
                  "board_g": round(board_g, 2), "cell_g": round(cell_g, 2),
                  "total_g": round(back_g + rest_g + board_g + cell_g, 1)},
         "placed": [{"name": pl.name, "part": pl.part, "face": pl.face, "x": round(pl.x, 2), "y": round(pl.y, 2),

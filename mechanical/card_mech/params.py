@@ -14,8 +14,10 @@ class CardParams:
     width: float
     height: float
     wall: float = 1.2        # frame around the edge
-    back: float = 0.5        # skin against the phone
-    front: float = 0.5       # skin with the microphone holes, the light and the contact windows
+    back: float = 0.5        # aluminium skin against the phone
+    front: float = 0.5       # aluminium skin with the microphone holes and the contact windows
+    antenna_window: float = 10.0   # at the antenna end, over the board strip, both skins give way to plastic
+    scoop: float = 0.8       # depth of the hollow in the edge where the slider of the switch stands
     corner_r: float = 3.2    # payment cards have about 3.2
     board_gap: float = 0.3   # between the board edge and the frame
     board_w: float = 14.0    # width of the board strip

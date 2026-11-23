@@ -9,8 +9,7 @@ Plaud Note and of Amazon's Bee Eclipse. Firmware and radio protocol live in the
 `mnemo-band` repository.
 
 Nothing here has been built or measured. This is a first design on paper, checked by
-scripts. Its choices are made and each says what would overturn it; several parts are
-chosen from listings whose datasheets have not been read.
+scripts. Its choices are made and each says what would overturn it.
 
 | What | Where |
 | --- | --- |
@@ -19,6 +18,7 @@ chosen from listings whose datasheets have not been read.
 | How long does it last? | [docs/power-budget.md](docs/power-budget.md) |
 | What it costs to make | [docs/cost-estimate.md](docs/cost-estimate.md) |
 | Design review: what was checked, what was wrong, what is at risk | [docs/review.md](docs/review.md) |
+| What the firmware must do for this hardware | [docs/firmware-requirements.md](docs/firmware-requirements.md) |
 | What was decided and why, what is unknown, and what would settle it | [docs/open-questions.md](docs/open-questions.md) |
 | Parts with sizes and how far each is verified | [parts/parts.yaml](parts/parts.yaml) |
 | Circuit, as data | [electrical/gen/design.py](electrical/gen/design.py) |

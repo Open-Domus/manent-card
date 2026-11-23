@@ -29,39 +29,56 @@ are trade size codes with estimated capacities, not a supplier's drawing.
 | --- | --- | --- | --- |
 | back skin | 0.5 | back skin | 0.5 |
 | gap over the parts | 0.15 | adhesive | 0.1 |
-| tallest part (button) | 1.35 | cell, swollen | 2.16 |
+| tallest part (recording switch) | 1.4 | cell, swollen | 2.16 |
 | board | 0.6 | gap over the cell | 0.1 |
 | adhesive and gaskets | 0.25 | front skin | 0.5 |
 | front skin | 0.5 | left over | 0.14 |
-| left over | 0.15 |  |  |
+| left over | 0.1 |  |  |
 
 - **Room for the cell**: 81.3 x 36.1 x 2.13 (thickness before swelling).
 - **Cell**: 203580, 80.0 x 35.0 x 2.0, about 450 mAh. Spare: 1.3 in length, 1.1 in width, 0.14 in height.
-- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 231.4; the 58 small parts need 48.8, 5% of what is free.
+- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 242.5; the 58 small parts need 48.8, 5% of what is free.
 - **Microphones**: 76.6 apart.
-- **Mass** (estimate): aluminium back skin 6.2 g, glass-filled plastic frame and front 4.6 g, board 1.88 g, cell 10.35 g: about 23.1 g.
+- **Slider**: stands 0.55 out of the bottom of its hollow in the edge; 0.5 is the least accepted.
+- **Mass** (estimate): two aluminium skins 12.0 g, glass-filled plastic frame and antenna end 1.6 g, board 1.88 g, cell 10.35 g: about 25.9 g.
 - Drawings: [from the phone side](../mechanical/out/plan-A.svg), [section](../mechanical/out/section-A.svg).
 
 ## Envelope B-thin: 85.6 x 54.0 x 3.0
 
-**Result: does not fit: the board and its parts are 0.35 too thick (button, 1.35 tall).**
+**Result: does not fit: the board and its parts are 0.4 too thick (recording switch, 1.4 tall).**
 
 | Through the board | Thickness | Through the cell | Thickness |
 | --- | --- | --- | --- |
 | back skin | 0.5 | back skin | 0.5 |
 | gap over the parts | 0.15 | adhesive | 0.1 |
-| tallest part (button) | 1.35 | cell, swollen | 1.62 |
+| tallest part (recording switch) | 1.4 | cell, swollen | 1.62 |
 | board | 0.6 | gap over the cell | 0.1 |
 | adhesive and gaskets | 0.25 | front skin | 0.5 |
 | front skin | 0.5 | left over | 0.18 |
-| left over | -0.35 |  |  |
+| left over | -0.4 |  |  |
 
 - **Room for the cell**: 81.3 x 36.1 x 1.67 (thickness before swelling).
 - **Cell**: 153580, 80.0 x 35.0 x 1.5, about 335 mAh. Spare: 1.3 in length, 1.1 in width, 0.18 in height.
-- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 231.4; the 58 small parts need 48.8, 5% of what is free.
+- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 242.5; the 58 small parts need 48.8, 5% of what is free.
 - **Microphones**: 76.6 apart.
-- **Mass** (estimate): aluminium back skin 6.2 g, glass-filled plastic frame and front 4.3 g, board 1.88 g, cell 7.71 g: about 20.2 g.
+- **Slider**: stands 0.55 out of the bottom of its hollow in the edge; 0.5 is the least accepted.
+- **Mass** (estimate): two aluminium skins 12.0 g, glass-filled plastic frame and antenna end 1.3 g, board 1.88 g, cell 7.71 g: about 23.0 g.
 - Drawings: [from the phone side](../mechanical/out/plan-B.svg), [section](../mechanical/out/section-B.svg).
+
+## Bending
+
+A load of 100 N in the middle of the card, held at two lines 70 apart: somebody sitting on it, gently.
+"Together" is the two skins working as one beam, which needs them glued to the frame and the rib all
+round without slipping. "Alone" is each skin bending by itself. The truth is between the two, and
+nobody has asked a cell maker what radius a pouch tolerates.
+
+| Skins | Together: sag | radius | Alone: sag | radius |
+| --- | --- | --- | --- | --- |
+| two aluminium skins | 0.08 | 4.9 m | 9.07 | 0.04 m |
+| aluminium back, plastic front | 0.4 | 1.0 m | 16.29 | 0.03 m |
+
+Glued well, two aluminium skins bend about five times less than one. Not glued, neither is of any
+use: the joint between skins and frame is the part of the shell that matters most.
 
 ## What thickness and board width buy
 

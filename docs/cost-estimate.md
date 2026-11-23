@@ -16,14 +16,14 @@ estimates. Each line has a low and a high figure; the truth may still be outside
 | V2S200D | 1 | 2.54 | 2.73 | DigiKey 2.73 at 1000, 2.54 on a reel |
 | nRF54L15, nRF54L15-QFAA-R | 1 | 1.81 | 2.66 | Avnet 1.81 at 1000 (-R7); DigiKey 2.66 at 1000 |
 | nPM1300, nPM1300-QEAA-R7 | 1 | 1.40 | 2.60 | Avnet 1.40 at 1000; aggregator range up to 2.60 |
+| record, SSSS811101 | 1 | 0.30 | 0.70 | estimate; a lower Same Sky switch is listed at 0.27 euro |
 | S-82A1A, S-82A1AAG-A6T5S (variant to confirm) | 1 | 0.20 | 0.45 | estimate |
 | 32.768kHz 9pF, 9HT11-32.768KDZC-T | 1 | 0.25 | 0.45 | estimate |
 | 32MHz | 1 | 0.20 | 0.40 | estimate |
 | 2.4 GHz | 1 | 0.15 | 0.40 | estimate |
 | N-MOSFET | 4 | 0.12 | 0.32 | estimate |
-| record, SLW-66527511-SMT-TR | 1 | 0.27 | 0.32 | DigiKey, 0.27 euro at 1000 |
 | 5.5V bidirectional, ESD230-B1-W0201 | 3 | 0.12 | 0.30 | estimate |
-| tactile, EVQ-P7 series | 1 | 0.18 | 0.30 | DigiKey, EVQ-P7A01P 0.18 at 500 |
+| tactile, EVQP7J01P | 1 | 0.18 | 0.30 | DigiKey, its sibling EVQ-P7A01P 0.18 at 500 |
 | red, 156125RS75000 | 1 | 0.10 | 0.30 | estimate |
 | radio matching parts | 5 | 0.10 | 0.25 | estimate, each of the five matching parts |
 | 2.2uH | 1 | 0.08 | 0.20 | estimate |
@@ -32,7 +32,7 @@ estimates. Each line has a low and a high figure; the truth may still be outside
 | Schottky, RB521ZS-30 | 1 | 0.02 | 0.05 | estimate |
 | ferrite bead | 1 | 0.01 | 0.03 | estimate |
 | resistors and capacitors | 36 | 0.11 | 0.43 | estimate, each resistor or capacitor |
-| **Parts on the board** | | **11.99** | **20.30** | |
+| **Parts on the board** | | **12.02** | **20.68** | |
 
 The contact pads and the cell are not in this table: pads are copper, the cell is below.
 
@@ -43,32 +43,32 @@ The contact pads and the cell are not in this table: pads are copper, the cell i
 | Board, four layers, 82.6 x 14 x 0.6 mm | 0.40 | 0.90 | estimate |
 | Assembly, one side, about 80 placements, QFN and 0201, X-ray | 1.50 | 3.00 | estimate; JLCPCB's standard service is the class needed (0201, 0.6 mm board) |
 | Cell, 2.0 x 35 x 80 mm, about 450 mAh, with leads | 1.50 | 3.50 | estimate; one listing gives 1 to 2 for a stock 400 mAh cell at 1000 |
-| Back skin, aluminium 0.5 mm, cut and anodised | 1.00 | 2.50 | estimate |
-| Frame and front, glass-filled plastic, moulded | 0.50 | 1.20 | estimate, tooling apart |
+| Two skins, aluminium 0.5 mm, cut and anodised | 2.00 | 4.50 | estimate |
+| Frame with the antenna end, glass-filled plastic, moulded | 0.40 | 1.00 | estimate, tooling apart |
 | Clear insert, button cap, switch cap, gaskets, membranes, adhesives | 0.60 | 1.50 | estimate |
 | Closing, programming and test by hand, 10 to 15 minutes in Italy | 5.00 | 9.00 | estimate, at 30 to 36 dollars an hour |
 | Sleeve with its magnet ring, and a steel ring | 1.20 | 2.50 | estimate |
 | Charger: cradle with four spring pins and a USB cable | 1.50 | 3.00 | estimate |
 | Box and leaflet | 0.60 | 1.50 | estimate |
-| **Everything else** | **13.80** | **28.60** | |
+| **Everything else** | **14.70** | **30.40** | |
 
-**One card, in its box with sleeve and charger: 25.79 to 48.90 dollars.**
+**One card, in its box with sleeve and charger: 26.72 to 51.08 dollars.**
 
 Hand work in Italy is the largest line, 5.00 to 9.00; the electronics with board and assembly are
-13.89 to 24.20. Shipping, duty, returns and the seller's margin are not counted.
+13.92 to 24.58. Shipping, duty, returns and the seller's margin are not counted.
 
 ## Paid once
 
 | Item | Low | High | Source |
 | --- | --- | --- | --- |
-| Mould for frame and front, and for the small plastic parts | 6,000 | 15,000 | estimate |
+| Mould for the frame, and for the small plastic parts | 6,000 | 15,000 | estimate |
 | Radio approval in Europe (RED): tests and file, no pre-approved module on the board | 5,000 | 10,000 | estimate |
 | Cell: transport test report, usually the maker's; custom size set-up | 0.00 | 2,000 | estimate |
 | Test fixture: spring pins on the four pads and the test pads | 300 | 1,000 | estimate |
 | **Paid once** | **11,300** | **28,000** | |
 
 Spread over a thousand cards that is 11.30 to 28.00 dollars each, so the first thousand cost
-37.09 to 76.90 each. Approval for other markets (United States, United Kingdom) is not counted,
+38.02 to 79.08 each. Approval for other markets (United States, United Kingdom) is not counted,
 nor is the work of designing what is not designed yet.
 
 ## The first ten cards
@@ -78,7 +78,7 @@ nor is the work of designing what is not designed yet.
 | Development kits: nRF54L15, nPM1300, T5838 and V2S200D evaluation boards | 150 | 350 | estimate |
 | Ten boards assembled by a prototype service, parts included | 350 | 700 | estimate |
 | Sample cells, ten to twenty, custom size | 100 | 400 | estimate |
-| Shells: machined aluminium skins, printed frames and fronts | 200 | 600 | estimate |
+| Shells: machined aluminium skins, printed frames | 200 | 600 | estimate |
 | Spring-pin charger and programming jig, made by hand | 50.00 | 150 | estimate |
 | **The first ten** | **850** | **2,200** | |
 
@@ -89,7 +89,7 @@ round of boards is likely once the unread datasheets have been read.
 
 Plaud sells its Note at 159 dollars and Amazon the Bee Eclipse at 99.99, the second with a
 subscription behind it. A common rule for hardware sold directly is a price of three to four
-times what the thing costs to make: on 37.09 to 76.90 that is 111 to 308 dollars.
+times what the thing costs to make: on 38.02 to 79.08 that is 114 to 316 dollars.
 
 ## What moves the figure most
 

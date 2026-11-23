@@ -31,6 +31,8 @@ FINE_PITCH_MARGIN = 0.30
 PACKING = 0.50        # share of the free board area that small parts may take; the rest is for tracks
 MIN_MIC_DISTANCE = 40.0
 EDGE = 0.40           # copper to the board edge
+SLIDE_INSET = 0.25    # switch body to the board edge: keeps its ground lands off the edge
+MIN_PROUD = 0.5       # how far the slider must stand out of the bottom of its hollow
 SMALL = {"passive0201", "passive0402", "passive0603", "nfet", "xtal32m", "xtal32k", "inductor", "protector"}
 
 
@@ -124,7 +126,7 @@ def layout(p: CardParams, parts=None) -> list[Placed]:
     part("cell tabs", "celltabs", "top", L - 9.0, W - 2.7)
     # on the edge of the card: the button and the recording switch, the light between them
     part("button", "button", "top", L / 2 - 12.0, 1.55)
-    part("recording switch", "slide", "top", L / 2 + 12.0, 1.5)
+    part("recording switch", "slide", "top", L / 2 + 12.0, 1.3 + SLIDE_INSET)
     # the light is 1.3 from the edge: its clear insert wraps the corner and shows on the front and on the edge
     part("light", "led", "top", L / 2, 1.3)
     keep("light window", "bottom", L / 2 - 2.0, 0.0, 4.0, 2.8)
@@ -135,6 +137,11 @@ def layout(p: CardParams, parts=None) -> list[Placed]:
     part("power chip", "pmic", "top", L - 22.0, 7.0, margin=FINE_PITCH_MARGIN)
     # the sensor that hears the phone through its back: in the middle, where the card lies flattest on it
     part("call sensor", "vps", "top", L / 2, 8.0)
+    # posts from the back skin to the board: behind the pads the charger presses on, and beside the
+    # call sensor, which must shake with the skin
+    keep("post behind the pads", "top", L - 13.5, 0.6, 2.0, 2.0)
+    keep("post behind the pads, inner", "top", L - 13.5, 6.4, 2.0, 2.0)
+    keep("post by the call sensor", "top", L / 2 + 2.6, 7.0, 2.0, 2.0)
     for i, name in enumerate(("nRESET", "UART TX", "UART RX", "1V8", "GND", "VBAT", "VBUS")):
         part(f"test pad {name}", "testpad", "top", L / 2 - 4.5 + 1.5 * i, W - 1.2)
     return out

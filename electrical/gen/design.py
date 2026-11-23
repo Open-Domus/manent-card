@@ -128,7 +128,7 @@ PMIC = ic("nPM1300-QEAA", "U", """
 """)
 
 PROT = ic("S-82A1A", "U", "1 VSS pi L\n2 VDD pi L\n3 VINI i L\n4 VM i R\n5 CO o R\n6 DO o R", width=20.32)
-VPS = ic("V2S200D", "MK", "2 VDD pi L\n1 GND pi L\n6 GND pi L\n5 SELECT i L\n4 CLK i R\n3 DATA t R", width=20.32)
+VPS = ic("V2S200D", "MK", "1 VDD pi L\n3 GND pi L\n4 GND pi L\n5 SELECT i L\n2 CLK i R\n6 DATA t R", width=20.32)
 MIC = ic("T5838", "MK", "7 VDD pi L\n3 GND pi L\n2 SELECT i L\n6 CLK i R\n1 DATA t R\n5 THSEL i R\n4 WAKE o R", width=20.32)
 # The pin order every 8-pin serial NOR flash shares; pad 9 is the exposed pad.
 FLASH = ic("SPI-NOR-8", "U", """
@@ -282,13 +282,14 @@ def build() -> list[Component]:
         cap("100nF", "VMIC", "audio", pkg="0201", note=f"X7R, next to pin 7 of microphone {name}")
 
     add(VPS, "V2S200D", "audio", by_name(VPS, {"VDD": "VMIC", "GND": "GND", "SELECT": "VMIC", "CLK": "PDM_CLK", "DATA": "PDM_DIN"}),
-        mpn="V2S200D", mfr="Knowles (Syntiant)", package="3.3x2.3x0.93 LGA",
+        mpn="V2S200D", mfr="Syntiant", package="3.3x2.3x0.93 LGA-6",
         note="Hears the phone through its back: the far side of a call. On the microphones' rail, so the switch and "
-             "the light govern it too. Shares data line 1 with microphone A, on the other clock edge: SELECT levels "
-             "to confirm. Pin numbers are the evaluation flex's, not the package's. 290 uA at this clock. "
+             "the light govern it too. Shares data line 1 with microphone A: SELECT at the rail makes it speak on "
+             "the rising clock edge (datasheet table 7); that microphone A speaks on the falling one is to confirm. "
+             "290 uA at this clock, asleep when the clock is held low. Senses along Z, across the board. "
              "It measures how its own body shakes: the board under it must be fixed stiffly to the back skin, "
              "with a post or a bead of hard adhesive next to it")
-    cap("100nF", "VMIC", "audio", pkg="0201", note="Next to the supply pin of the call sensor")
+    cap("100nF", "VMIC", "audio", pkg="0201", note="C0G, next to the supply pin of the call sensor: its maker asks for no class 2 ceramic nearby, which sings")
 
     # ---- flash ---------------------------------------------------------------------------
     add(FLASH, "W25Q256JW", "storage", by_name(FLASH, {
@@ -305,13 +306,14 @@ def build() -> list[Component]:
     res("100k", "FLASH_IO3", "VFLASH", "storage", note="Termination in single-bit SPI to confirm")
 
     # ---- button, light, pads ---------------------------------------------------------------
-    add(SW, "tactile", "ui", ("BTN_N", "GND"), mpn="EVQ-P7 series", mfr="Panasonic", package="side-push 3.5x2.9x1.35",
-        note="Pressed from the edge of the card; pulled up inside the PMIC (SHPHLD). Force and terminal shape to choose")
+    add(SW, "tactile", "ui", ("BTN_N", "GND"), mpn="EVQP7J01P", mfr="Panasonic", package="side-push 3.5x2.9x1.35",
+        note="Pressed from the edge of the card; pulled up inside the PMIC (SHPHLD). 1.6 N, stands 30 N; works down to 10 uA")
     add(D, "Schottky", "ui", ("BTN_N", "BTN_WAKE"), mpn="RB521ZS-30", mfr="Rohm", package="0201",
         note="Pin 1 is the cathode. Anode at the SoC: keeps the PMIC pull-up voltage off the 1.8 V pin")
-    add(SPDT, "record", "ui", {"2": "VMIC", "1": "VMIC_SW", "3": "GND"}, mpn="SLW-66527511-SMT-TR", mfr="Same Sky", package="slide 6.65x2.75x1.1",
+    add(SPDT, "record", "ui", {"2": "VMIC", "1": "VMIC_SW", "3": "GND"}, mpn="SSSS811101", mfr="Alps Alpine", package="slide 6.7x2.6x1.4",
         note="The recording switch. It is in the microphones' supply itself: in the off position the microphones "
-             "have no power and their rail is held at ground, whatever the firmware does")
+             "have no power and their rail is held at ground, whatever the firmware does. Terminal 2 is the common. "
+             "Rated down to 50 uA at 3 V; here it carries about 1.3 mA at 1.8 V")
     add(FLAG, "PWR_FLAG", "ui", ("VMIC",))
     res("1M", "VMIC", "GND", "ui", note="Empties the rail when firmware opens the load switch with the recording switch on, so the light goes out")
     res("10k", "VMIC", "MIC_ON", "ui",
@@ -319,7 +321,7 @@ def build() -> list[Component]:
              "so this pin cannot power the microphones")
     add(LED, "red", "ui", ("LED_K", "VSYS"), mpn="156125RS75000", mfr="Wuerth Elektronik", package="reverse-mount 1205",
         note="Mounted upside down over a hole in the board, 1.3 mm from the edge: a clear insert in the corner of "
-             "the card shows it on the front and on the edge. Which pad is the cathode is not read")
+             "the card shows it on the front and on the edge. Pad 1 is the cathode. Stands only 200 V of static")
     res("3.3k", "LED_K", "LED_SW", "ui",
         note="About 0.5 mA whenever the microphones have power; adjust after a look through the front skin")
     add(NFET, "N-MOSFET", "ui", {"1": "VMIC", "2": "GND", "3": "LED_SW"}, mpn="to choose",

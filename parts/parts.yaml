@@ -38,37 +38,39 @@ parts:
     status: verified
     url: https://invensense.tdk.com/products/digital/t5838/
   button:
-    function: Tactile switch pressed from the edge of the board
+    function: Tactile switch pressed from the edge of the board, 1.6 N
     manufacturer: Panasonic
-    mpn: EVQ-P7 series (force and terminal shape to choose)
-    package: SMD side-push, 3.5 x 2.9
+    mpn: EVQP7J01P
+    package: SMD side-push, 3.5 x 2.9, straight terminals, no boss
     size: [3.5, 2.9, 1.35]
-    status: secondary        # series page: 3.5 x 2.9, height 1.35, travel 0.2. Drawing not read
-    url: https://na.industrial.panasonic.com/products/electromechanical/switches/light-touch-tactile-switches/series/79247
+    actuator: 0.65           # the knob beyond the body
+    status: verified         # catalogue ANCTB21E 2025-07: drawing, land pattern, rating 10 uA 2 V to 50 mA 12 V, 30 N push strength
+    url: https://industry.panasonic.com/ac/cdn/e/control/switch/light-touch/catalog/sw_lt_eng_3529s_side.pdf
   slide:
-    function: Slide switch, one pole two positions
-    manufacturer: Same Sky
-    mpn: SLW-66527511-SMT-TR
-    package: SMD gull wing, 6.65 x 2.75
-    size: [6.65, 2.75, 1.1]
-    status: secondary        # distributor summary; datasheet not read: which way the slider points is not confirmed
-    url: https://www.sameskydevices.com/product/switches/slide-switches/slw-66527511-smt-tr
+    function: Slide switch, one pole two positions, slider parallel to the board
+    manufacturer: Alps Alpine
+    mpn: SSSS811101
+    package: SMD, 6.7 x 2.6, with ground terminals and two locating bosses
+    size: [6.7, 2.6, 1.4]
+    actuator: 1.5            # the slider beyond the body
+    status: verified         # maker's page and SSSS8 catalogue 2025-10: horizontal actuator, 1.5 travel, 0.3 A 5 V max, 50 uA 3 V min, 10,000 cycles
+    url: https://tech.alpsalpine.com/e/products/detail/SSSS811101/
   vps:
     function: Vibration sensor with a PDM output, hears the phone through its back
-    manufacturer: Knowles (sold by Syntiant)
+    manufacturer: Syntiant (formerly Knowles)
     mpn: V2S200D
-    package: LGA, 3.3 x 2.3
+    package: LGA-6, 3.3 x 2.3
     size: [3.3, 2.3, 0.93]
-    status: secondary        # product brief: size, supply, currents, clock. Pin numbers and land pattern not read
-    url: https://www.knowles.com/V2S
+    status: verified         # datasheet revision C: pins, land pattern, SELECT table, senses along Z, 290 uA at 768 kHz
+    url: https://www.syntiant.com
   led:
     function: Recording light, mounted upside down to shine through a hole in the board
     manufacturer: Wuerth Elektronik
     mpn: 156125RS75000
     package: "reverse-mount 1205"
-    size: [3.2, 1.2, 1.1]
-    status: secondary        # family page: WL-SMRW 1205, 3.2 x 1.2 x 1.1, red, 110 mcd, 140 degrees. Datasheet not read
-    url: https://www.we-online.com/en/components/products/WL-SMRW
+    size: [3.2, 1.2, 0.3]    # what stays on the parts side: the lens, 0.82 more, goes into the board
+    status: verified         # datasheet 001.001: 3.2 x 1.2 x 1.1, hole 1.75, pads 1.0 x 1.2 at 3.4 centres, pad 1 cathode, 2.0 V and 110 mcd at 20 mA
+    url: https://www.we-online.com/components/products/datasheet/156125RS75000.pdf
   xtal32m:
     function: 32 MHz crystal
     manufacturer: Kyocera

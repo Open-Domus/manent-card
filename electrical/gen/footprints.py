@@ -38,23 +38,35 @@ CUSTOM = {
               ("5", "rect", 1.475, -1.05, 0.30, 0.30), ("4", "rect", 1.475, 1.05, 0.30, 0.30)],
         ring=("3", 0.71, 0.0, 1.025, 1.625), hole=(0.71, 0.0, 0.6),
         status="pad sizes and positions verified; pin-to-pad mapping read by matching two figures"),
-    "Side_Button": dict(
-        body=(3.5, 2.9), pads=[("1", "rect", -1.4, 0.5, 0.7, 1.2), ("2", "rect", 1.4, 0.5, 0.7, 1.2)],
-        status="placeholder: pads to redraw from the Panasonic EVQ-P7 drawing; the plunger is on the -Y side"),
-    "Slide_SPDT": dict(
-        body=(6.65, 2.75),
-        pads=[("1", "rect", -2.0, 0.8, 0.7, 1.0), ("2", "rect", 0.0, 0.8, 0.7, 1.0), ("3", "rect", 2.0, 0.8, 0.7, 1.0),
-              ("", "rect", -3.0, -0.5, 0.7, 1.0), ("", "rect", 3.0, -0.5, 0.7, 1.0)],
-        status="placeholder: pads to redraw from the Same Sky drawing; the slider is on the -Y side, pad 2 is the common"),
-    "LED_Reverse_3212": dict(
-        body=(3.2, 1.2), pads=[("1", "rect", -1.25, 0.0, 0.7, 1.2), ("2", "rect", 1.25, 0.0, 0.7, 1.2)],
-        hole=(0.0, 0.0, 1.2),
-        status="placeholder: pads and hole to redraw from the Wuerth datasheet; it shines through the hole"),
+    # Panasonic ANCTB21E, EVQP7A/EVQP7J: land pattern 5.0 x 2.5 overall, 2.2 between the two columns,
+    # 0.4 between the two rows. The upper pair is one terminal, the lower pair the other.
+    "EVQP7J": dict(
+        body=(3.5, 2.9),
+        pads=[("1", "rect", -1.8, 0.725, 1.4, 1.05), ("1", "rect", 1.8, 0.725, 1.4, 1.05),
+              ("2", "rect", -1.8, -0.725, 1.4, 1.05), ("2", "rect", 1.8, -0.725, 1.4, 1.05)],
+        status="land sizes from the catalogue drawing; its place under the body assumed centred. The knob is on the -Y side"),
+    # Alps SSSS8 catalogue, drawing 7: three terminals 0.7 wide at -2.25, +0.75, +2.25 (terminal 2 is the
+    # common), four ground lands 1.0 x 0.8 at 7.3 centres, two 0.9 holes 3.0 apart for the bosses.
+    "SSSS811101": dict(
+        body=(6.7, 2.6),
+        pads=[("1", "rect", -2.25, 1.55, 0.7, 1.5), ("2", "rect", 0.75, 1.55, 0.7, 1.5), ("3", "rect", 2.25, 1.55, 0.7, 1.5),
+              ("", "rect", -3.65, -0.8, 1.0, 0.8), ("", "rect", 3.65, -0.8, 1.0, 0.8),
+              ("", "rect", -3.65, 0.8, 1.0, 0.8), ("", "rect", 3.65, 0.8, 1.0, 0.8)],
+        holes=[(-1.5, 0.0, 0.9), (1.5, 0.0, 0.9)],
+        status="pitches and land sizes from the catalogue drawing; distances across the body read off a small figure. "
+               "The slider is on the -Y side"),
+    # Wuerth 156125RS75000, land pattern for reverse use: two lands 1.0 x 1.2 with 2.4 between them, hole 1.75.
+    "LED_156125RS75000": dict(
+        body=(3.2, 1.2), pads=[("1", "rect", -1.7, 0.0, 1.0, 1.2), ("2", "rect", 1.7, 0.0, 1.0, 1.2)],
+        holes=[(0.0, 0.0, 1.75)],
+        status="from the datasheet; pad 1 is the cathode"),
+    # Syntiant V2S200D revision C, example land pattern: six lands 0.75 square, 1.19 between the two rows of
+    # three, 1.095 along each row. Turned a quarter turn so the long side is along X.
     "V2S200D": dict(
         body=(3.3, 2.3),
-        pads=[(str(n), "rect", x, y, 0.5, 0.5) for n, x, y in ((1, -1.1, -0.7), (2, 0.0, -0.7), (3, 1.1, -0.7),
-                                                               (4, 1.1, 0.7), (5, 0.0, 0.7), (6, -1.1, 0.7))],
-        status="placeholder: six pads in the order of the evaluation flex, not the package drawing"),
+        pads=[("1", "rect", -1.095, 0.595, 0.75, 0.75), ("2", "rect", 0.0, 0.595, 0.75, 0.75), ("3", "rect", 1.095, 0.595, 0.75, 0.75),
+              ("4", "rect", 1.095, -0.595, 0.75, 0.75), ("5", "rect", 0.0, -0.595, 0.75, 0.75), ("6", "rect", -1.095, -0.595, 0.75, 0.75)],
+        status="from the datasheet; the quarter turn was done by hand and wants a second pair of eyes"),
     # ABLIC PV006-A-L-SD-1.0.
     "DFN-6_1414": dict(
         body=(1.4, 1.4),
@@ -94,8 +106,7 @@ def _text(name: str, fp: dict) -> str:
         out.append(f'\t(pad "{num}" smd custom (at {x - r} {y}) (size {width} {width}) (layers "F.Cu" "F.Mask")'
                    f' (options (clearance outline) (anchor circle))'
                    f' (primitives (gr_circle (center {r} 0) (end {2 * r} 0) (width {width}) (fill no))))')
-    if "hole" in fp:
-        x, y, d = fp["hole"]
+    for x, y, d in fp.get("holes", [fp["hole"]] if "hole" in fp else []):
         out.append(f'\t(pad "" np_thru_hole circle (at {x} {y}) (size {d} {d}) (drill {d}) (layers "*.Cu" "*.Mask"))')
     return "\n".join(out) + "\n)\n"
 
@@ -163,7 +174,7 @@ def footprint_of(c) -> str | None:
     sym, pkg = c.sym.name, c.fields.get("Package", "")
     if sym in ("XTAL", "XTAL4"):
         return "Crystal_SMD_2016-4Pin_2.0x1.6mm" if sym == "XTAL4" else "Crystal_SMD_2012-2Pin_2.0x1.2mm"
-    simple = {"SW": "Side_Button", "SPDT": "Slide_SPDT", "LED": "LED_Reverse_3212", "ANTENNA": "Antenna_1608", "NMOS": "SOT-883",
+    simple = {"SW": "EVQP7J", "SPDT": "SSSS811101", "LED": "LED_156125RS75000", "ANTENNA": "Antenna_1608", "NMOS": "SOT-883",
               "CELL": "Cell_Tabs", "TVS": "D_0201_0603Metric", "D": "D_0201_0603Metric", "FB": "L_0201_0603Metric",
               "PAD": "Pad_Test_D1.0", "CONTACT": "Pad_Contact_D2.0"}
     if sym in simple:

@@ -100,17 +100,18 @@ One logic rail at 1.8 V, as on the ring: the microphones accept nothing higher.
 | Power | Nordic nPM1300, QFN32 | 5 x 5 x 0.85 | Charges at 32 to 800 mA; the band's nPM1304 stops at 100 mA, five hours for this cell | pin names match the nPM1304's, pin for pin; read through a summary |
 | Flash | Winbond W25Q256JWEIQ, WSON-8 | 8 x 6 x 0.8 | 256 Mbit holds about 3 h 38 min not yet uploaded, for a tenth of the price of 1 Gbit | distributor listing; height and pin order not read |
 | Microphones | 2 x TDK T5838 | 3.5 x 2.65 x 0.98 | Already planned by the firmware; sound enters through the board | verified |
-| Call sensor | Knowles V2S200D | 3.3 x 2.3 x 0.93 | Hears the phone through its back; PDM, 1.8 V, 290 uA at the microphones' clock | product brief; pin numbers and land pattern not read |
-| Recording switch | Same Sky SLW-66527511-SMT-TR | 6.65 x 2.75 x 1.1 | The lowest slide switch found; in the listening supply | distributor summary; which way the slider points not confirmed |
-| Button | Panasonic EVQ-P7 series | 3.5 x 2.9 x 1.35 | Side push, on the board surface, no cut-out | series page; drawing not read |
-| Light | Wuerth 156125RS75000, reverse-mount | 3.2 x 1.2 x 1.1 | Sits with the other parts and shines through a hole in the board | family page; datasheet not read |
+| Call sensor | Syntiant V2S200D | 3.3 x 2.3 x 0.93 | Hears the phone through its back; PDM, 1.8 V, 290 uA at the microphones' clock; senses across the board | datasheet read: pins, land pattern, clock edges |
+| Recording switch | Alps SSSS811101 | 6.7 x 2.6 x 1.4 | Slider parallel to the board, 1.5 mm beyond the body; works down to 50 uA; two bosses and four ground lands hold it | maker's catalogue read: drawing and land pattern |
+| Button | Panasonic EVQP7J01P | 3.5 x 2.9 x 1.35 | Side push, 1.6 N, stands 30 N, on the board surface | catalogue read: drawing and land pattern |
+| Light | Wuerth 156125RS75000, reverse-mount | 3.2 x 1.2 x 1.1 | Sits with the other parts; its lens goes into a 1.75 mm hole in the board | datasheet read |
 | Cell protection | ABLIC S-82A1A | 1.4 x 1.4 | Fitted only if the cell has none of its own | verified |
 | Exposed pads | 3 x Infineon ESD230-B1-W0201 | 0.58 x 0.28 | One on the charging pad, one on each service pad | verified; capacitance on a debug line not checked |
 | Cell | flat LiPo pouch, 2.0 x 35 x 80 | 80 x 35 x 2.0 | See the space budget | custom size: makers offer 2.0 mm cells to order; none asked yet |
 
 The full list with part numbers is `electrical/out/bom.csv`. Both Nordic chips are the QFN
 versions, on an ordinary four-layer board, for the reasons and with the caveats written in
-the band's design document. The power chip is the band's larger sibling in the same package: the pin tables were read once as page text, and the supply
+the band's design document. Both pin tables were read a second time, word for word, on
+2026-11-23 and match. The power chip is the band's larger sibling in the same package: the pin tables were read once as page text, and the supply
 filtering and antenna matching follow the ring's verified circuit with the QFN values.
 
 ### Microcontroller pins
@@ -177,10 +178,11 @@ picks up the phone's own sound through its back. Amazon names calls among the us
 Bee Eclipse and does not say how. A card that rides on a phone and is deaf to the phone
 would be the lesser product, so this card has the sensor too.
 
-It is a Knowles V2S200D, a vibration sensor that speaks the microphones' own digital
+It is a Syntiant V2S200D (Knowles's design), a vibration sensor that speaks the microphones' own digital
 language at their own voltage and clock. It sits in the middle of the board, on the face
-towards the phone. It measures how its own body shakes, so the board under it is fixed
-stiffly to the back skin with a post beside it. It hangs on
+towards the phone. It measures how its own body shakes across the board, which is the way
+a phone's back moves, so the board under it is fixed stiffly to the back skin with a post
+beside it. It hangs on
 the same switched rail as the microphones: the switch that silences them silences it, and
 the light that follows them follows it.
 
@@ -205,13 +207,19 @@ between the call sensor and the phone with anything soft.
 ## Card and assembly
 
 - A flat box 85.6 x 54.0 x 3.5 mm with 3.2 mm corners: a frame 1.2 mm wide and two skins
-  0.5 mm thick, about 23 g with everything in it.
-- **The back skin is aluminium, the frame and the front skin are glass-filled plastic.**
-  The card gets sat on and a lithium pouch must not be bent: the metal skin is what
-  resists. On the back it also puts the same sheet of metal behind the antenna whether the
-  card is on a phone or on a table, so the antenna is tuned once, and it carries the
-  phone's vibration to the call sensor. The plastic front and frame let the radio out and
-  take the microphone holes, the pad windows and the clear insert of the light.
+  0.5 mm thick, about 26 g with everything in it.
+- **Both skins are aluminium, glued to a glass-filled plastic frame.** The card gets sat on
+  and a lithium pouch must not be bent. Under 100 N across 70 mm the two skins, working
+  together, sag 0.08 mm; an aluminium back with a plastic front sags five times as much.
+  Either is useless if the skins slip on the frame, so the glue line all round, and along
+  the rib, is the structural part of the shell. See the space budget.
+- **At the antenna end both skins stop 10 mm short**, over the board strip, and the frame's
+  plastic takes their place. The antenna has no metal above or below it.
+- The aluminium back also carries the phone's vibration to the call sensor, through a post
+  to the board beside it. Two more posts stand behind the contact pads, so the charger's
+  spring pins press on something.
+- Where the front skin has windows for the pads, the frame's plastic lines them, so a
+  spring pin cannot touch the skin.
 - The board is a strip 82.6 x 14.0 mm, 0.6 thick, along one long edge. The cell lies
   beside it, with a rib of the frame between them. Nothing is stacked on the cell.
 - Every part is on the face of the board that looks at the phone. The other face lies
@@ -219,23 +227,28 @@ between the call sensor and the phone with anything soft.
 - The microphones' sound comes from the front, through a hole in the skin, a gasket and a
   hole in the board. The light shines the same way through its own hole.
 - Switch and button are on the edge of the card, about 24 mm apart, the light between them.
+  The switch's slider stands 0.55 mm proud in a hollow 0.8 mm deep in the edge, flush with
+  the card's outline: a finger finds it, a pocket does not move it. The button's knob
+  ends 0.55 mm outside the board and a cap in the frame carries it to the edge.
+- The cell's tabs are on one of its short sides and the board is along a long one: the cell
+  is ordered with a flexible tail that passes a gap in the rib, next to the pads for it.
 - The call sensor is in the middle of the board, glued through to the back skin.
-- Openings in the front skin: two microphone holes and four pad windows. In the frame: a
-  slot for the switch, a cap for the button, the clear insert of the light. In the back
-  skin: none.
-- The antenna takes one corner of the board, with no copper under it and the aluminium
-  skin 1.5 mm behind it.
+- Openings in the front skin: two microphone holes and four pad windows. In the frame: the
+  hollow and slot for the switch, a cap for the button, the clear insert of the light. In
+  the back skin: none.
+- The antenna takes one corner of the board, with no copper under it, inside the plastic end.
 
 Whether it all fits is in [space-budget.md](space-budget.md). In short: at 3.5 mm
-everything fits with a cell of about 450 mAh and 0.15 mm to spare over the tallest part.
+everything fits with a cell of about 450 mAh and 0.1 mm to spare over the tallest part,
+the switch.
 
 ### Why 3.5 mm
 
-Plaud's card is 3.0. At 3.0 the cell still fits, 1.5 mm thick and about 335 mAh, and the
-slide switch found is low enough. The board side is 0.35 too thick: the button is 1.35 mm
-tall, and the gap for the microphone gaskets takes 0.25. Panasonic lists a lower button of
-the same outline (EVP-AN, 0.7 mm, sunk in a cut-out of the board) whose drawing could not
-be read; with it and a 0.4 mm board the thin card closes. So 3.0 is two changes away.
+Plaud's card is 3.0. At 3.0 the cell still fits, 1.5 mm thick and about 335 mAh. The board
+side is 0.4 too thick: the switch is 1.4 mm tall, the button 1.35, and the gap for the
+microphone gaskets takes 0.25. Lower parts are listed (a Same Sky switch at 1.1, Panasonic's
+EVP-AN button at 0.7 in a cut-out) but their drawings could not be read, and a 0.4 mm
+board would be needed as well. So 3.0 is three changes away, none of them verified.
 
 It is still not chosen. The power budget may be wrong by the factor that separates it from
 what Plaud publishes, about five. At five times the budget's current the 450 mAh cell
@@ -261,10 +274,11 @@ What is done:
 - The rules in the project file are an ordinary fabricator's: 0.1 mm track and gap,
   0.4 mm vias with a 0.2 mm hole. They are an assumption, not a quote.
 
-What is not done: **no track is routed.** All 179 connections are still open and the
+What is not done: **no track is routed.** All 184 connections are still open and the
 ground plane is not poured. The placement is a machine's first arrangement. The footprints
-of the switch, the button, the light, the call sensor, the antenna and the cell tabs are
-placeholders: the parts are chosen, their drawings have not been read. The board is five times longer than it is wide and
+of the switch, the button, the light and the call sensor are drawn from their makers'
+drawings; those of the antenna and the cell tabs are placeholders until those are chosen.
+Protection diodes are placed at their pads. The board is five times longer than it is wide and
 0.6 mm thick: whether it survives assembly without a carrier has not been asked.
 
 ## Power
@@ -277,12 +291,12 @@ on the requirement, not on the budget. Charging takes about two and a half hours
 
 ## Radio
 
-Unknown until measured, and the hard case of the three products: the card spends its life
-flat against a phone. The aluminium back skin makes that a known problem instead of a
-changing one: the antenna always has the same metal 1.5 mm behind it. An antenna that
-close to a ground plane is narrow and inefficient, which a link to a phone a millimetre
-away forgives and a link across a meeting room may not. If the range on a table is too
-short, the remedy is a window in the skin under the antenna corner, and tuning twice.
+Unknown until measured. The antenna sits in a plastic end 10 mm long with no metal over or
+under it and aluminium beginning 4 mm from it on one side. On a table that is close to the
+free space it is tuned for. On a phone, the phone's back is 2 mm behind it and detunes it,
+but there the other end of the link is the phone itself, a few millimetres away, where a
+detuned antenna is still far more than enough. The case that needs range is the card on a
+table and the phone in a pocket, and that is the case the antenna is tuned for.
 
 ## Prior art
 
