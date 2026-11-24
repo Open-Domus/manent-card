@@ -85,9 +85,35 @@ calculation made. None of it is a measurement.
   board; its shape is.
 - Both stacks add up to the card's height, and the test that says so runs on every build.
 
+## The routing, looked at by eye
+
+The routing was looked at once, layer by layer and by measuring it, after the autorouter's
+first result. What that found, and what was done:
+
+- The microcontroller's centre pad, its main ground, had no via to the plane: the script that
+  stitches the ground took the paste openings for pads and kept away. Fixed: nine vias under
+  it, six under the charger, placed before routing.
+- Digital signals crossed the matching network: six vias a millimetre from its inductors,
+  the reset line 0.25 mm from one. Fixed: the area is reserved, the nearest signal via is
+  now 1.0 mm from a matching pad.
+- Two tracks ran on the inner layer along the edge of the plane's notch under the antenna.
+  Fixed: nothing on the inner signal layer or the bottom within 0.8 mm of that corner.
+- The autorouter, once held to the top layer, drew the antenna feed 49 mm long around the
+  chip, because the placer had put the matching parts so that the line could not pass
+  between them. Fixed: the network is set out by rule and the line is 10 mm in all.
+- The charge current's way was 0.15 to 0.2 mm wide. Now 0.3 mm for most of its length
+  (the cell's return for three quarters of it); 0.4 mm did not get into the charger's pins.
+- The supply ran through the 32 kHz crystal's footprint with a via under it. Fixed: reserved.
+- A row of six vias cut a 2.5 mm slot in the ground plane. Now none is longer than 1.5 mm,
+  and the plane's clearance around a via is 0.1 mm instead of 0.15.
+- Vias under the microphones' gaskets, a leak for sound: none now.
+- Two ground vias stood in capacitor pads: a via no longer goes into a land.
+- Not fixed: the decoupling capacitors are 2 to 4 mm from their pins. Nearer than that, the
+  pins cannot reach the inner layer through 0.4 mm vias; it would take 0.3 mm vias.
+
 ## Not checked at all
 
-The routing, beyond KiCad's rules: it is an autorouter's, and nobody has looked at the
-power loops, the crystal's guard, the antenna feed or the return paths. The supply filtering of the microcontroller, taken from the ring. Tolerances: every
+In the routing: the power loops of the two converters in detail, and the return paths of
+the long microphone lines. The supply filtering of the microcontroller, taken from the ring. Tolerances: every
 gap in the fit model is nominal. Electromagnetic compatibility, safety of the cell,
 drop, and anything that needs the thing in a hand.

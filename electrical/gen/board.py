@@ -22,9 +22,12 @@ ROOT = Path(__file__).resolve().parents[2]
 GAP = 0.35            # between the land patterns of two parts
 # Kept free around each chip (left, top, right, bottom), for its tracks to leave and their vias
 # to drop. The microcontroller needs more on the side facing the antenna.
-FANOUT = {"nRF54L15": (1.5, 1.6, 1.4, 1.4), "nPM1300": (1.1, 1.1, 1.1, 1.1)}
+FANOUT = {"nRF54L15": (2.0, 1.6, 1.8, 1.8), "nPM1300": (1.1, 1.1, 1.1, 1.1)}
 # The same for the small parts with many pins that the placer puts down itself: room on every side.
 ROOM = {"S-82A1A": 0.7, "N-MOSFET": 0.6}
+# A capacitor that serves one supply pin of a chip may stand this near the chip's land pattern,
+# inside the room kept for the chip's tracks: near the pin matters more than an easy escape.
+TIGHT = 1.8
 # Nets that must be as short as they can be: the parts on them choose their place first.
 SHORTEST = {"ANT", "RF_A", "RF_B", "RF_50", "ANT_FEED", "XC1", "XC2", "XL1", "XL2", "DCC", "SW1"}
 STEP = 0.05
@@ -39,9 +42,11 @@ RULES = {  # millimetres; an ordinary four-layer board with through vias only
 # plane under it, as in the usual four-layer builds. To be replaced by the fabricator's figures.
 STACK = {"prepreg_mm": 0.10, "er": 4.1}
 RF_NETS = ("ANT", "RF_A", "RF_B", "RF_50", "ANT_FEED")
-POWER_NETS = ("VBUS", "VBUSOUT", "VBAT", "VSYS", "V1V8", "VMIC", "VMIC_SW", "VFLASH", "SW1", "DCC", "DECD", "DECA",
-              "CELL_P", "CELL_N", "FET_MID", "SENSE")
+POWER_NETS = ("VBUSOUT", "VSYS", "V1V8", "VMIC", "VMIC_SW", "VFLASH", "SW1", "DCC", "DECD", "DECA")
 POWER_WIDTH = 0.2
+# The way the charge current takes from the pads to the cell and back: wider, for the voltage it loses.
+BATTERY_NETS = ("VBUS", "VBAT", "CELL_P", "CELL_N", "FET_MID", "SENSE")
+BATTERY_WIDTH = 0.3
 
 
 def microstrip_ohms(w, h, er):
@@ -71,6 +76,7 @@ DEFAULT_CLASS = {"name": "Default", "clearance": 0.09, "track_width": 0.1, "via_
                  "pcb_color": "rgba(0, 0, 0, 0.000)", "schematic_color": "rgba(0, 0, 0, 0.000)"}
 NET_CLASSES = [DEFAULT_CLASS,
                {**DEFAULT_CLASS, "name": "Power", "track_width": POWER_WIDTH},
+               {**DEFAULT_CLASS, "name": "Battery", "track_width": BATTERY_WIDTH},
                {**DEFAULT_CLASS, "name": "Radio", "track_width": rf_width()}]
 # Checks switched off on purpose: there is no silkscreen in a closed card, the stock courtyards
 # ask for more rework room than the placer leaves (it keeps GAP between land patterns), and
@@ -121,6 +127,7 @@ def write_project():
     nets = pro.setdefault("net_settings", {})
     nets["classes"] = NET_CLASSES
     nets["netclass_patterns"] = ([{"netclass": "Power", "pattern": n} for n in POWER_NETS]
+                                 + [{"netclass": "Battery", "pattern": n} for n in BATTERY_NETS]
                                  + [{"netclass": "Radio", "pattern": n} for n in RF_NETS])
     path.write_text(json.dumps(pro, indent=2, sort_keys=True) + "\n")
 
@@ -141,11 +148,52 @@ def fixed_positions(comps, card):
     return out
 
 
+def radio_chain(comps, soc_at):
+    """The matching network, set out by rule: the placer's nearest-first habit tangles it.
+
+    The series parts stand in a column that leaves the chip's radio pin and climbs towards the
+    antenna; the last one lies down and points at the antenna's pad. Each capacitor to ground
+    hangs off its node on the side away from the chip, where its ground via has room.
+    """
+    by_nets = {}
+    for c in comps:
+        nets = frozenset(n for n in c.nets.values() if n)
+        if nets & set(RF_NETS) and len(c.nets) == 2:
+            by_nets[nets] = c
+    soc = next(c for c in comps if c.value == "nRF54L15")
+    px, py = pad_positions(footprint_of(soc), *soc_at[:2], soc_at[3])[next(n for n, net in soc.nets.items() if net == "ANT")][0]
+    assert px < soc_at[0], "the radio pin is expected on the side of the antenna"
+    xc = px - FANOUT[soc.value][0] - 0.55
+    pitch = 1.6                                   # a part and the room for a track to cross between two
+    spots = [  # nets of the part, centre, upright?, the net whose pad must face (tx, ty)
+        (("ANT", "RF_A"), (xc, py - 0.8), True, ("ANT", xc, py)),
+        (("RF_A", "RF_B"), (xc, py - 0.8 - pitch), True, ("RF_A", xc, py)),
+        (("RF_B", "RF_50"), (xc, py - 0.8 - 2 * pitch), True, ("RF_B", xc, py)),
+        (("RF_50", "ANT_FEED"), (xc - 0.6, py - 0.8 - 3 * pitch + 0.1), False, ("RF_50", xc, py)),
+        (("RF_A", "GND"), (xc - 0.75, py - 0.8 - pitch / 2), False, ("RF_A", xc, py)),
+        (("RF_B", "GND"), (xc - 0.75, py - 0.8 - 3 * pitch / 2), False, ("RF_B", xc, py)),
+        (("RF_50", "GND"), (xc + 0.75, py - 0.8 - 5 * pitch / 2), False, ("RF_50", xc, py)),
+        (("ANT_FEED", "GND"), (xc - 0.92, py - 0.8 - 3 * pitch + 0.9), True, ("ANT_FEED", xc, 0.0)),
+    ]
+    out = {}
+    for nets, (x, y), upright, (net, tx, ty) in spots:
+        c = by_nets[frozenset(nets)]
+        pin = next(n for n, name in c.nets.items() if name == net)
+        w, h = size(footprint_of(c), 0)
+        turns = [r for r in (0, 90, 180, 270) if (size(footprint_of(c), r)[1] > size(footprint_of(c), r)[0]) == upright] \
+            if w != h else [0, 90, 180, 270]
+        rot = min(turns, key=lambda r: math.dist(pad_positions(footprint_of(c), x, y, r)[pin][0], (tx, ty)))
+        out[c.ref] = (round(x, 3), round(y, 3), "F", rot)
+    return out
+
+
 def place(comps, card):
     L, W = card.board
     placed = fixed_positions(comps, card)
+    placed.update(radio_chain(comps, placed[next(c.ref for c in comps if c.value == "nRF54L15")]))
     by_ref = {c.ref: c for c in comps}
     blocked = []                                   # rectangles nothing may be put on, top face
+    fanouts = []                                   # around a chip: (for most parts, for its capacitors)
     for pl in S.layout(card):
         if pl.part is None and pl.face in ("top", "both"):
             blocked.append((pl.x, pl.y, pl.x + pl.w, pl.y + pl.h))
@@ -153,7 +201,14 @@ def place(comps, card):
         if side == "F":
             w, h = size(footprint_of(by_ref[ref]), rot)
             ml, mt, mr, mb = (max(f - GAP, 0.0) for f in FANOUT.get(by_ref[ref].value, (0, 0, 0, 0)))
-            blocked.append((x - w / 2 - ml, y - h / 2 - mt, x + w / 2 + mr, y + h / 2 + mb))
+            wide = (x - w / 2 - ml, y - h / 2 - mt, x + w / 2 + mr, y + h / 2 + mb)
+            if by_ref[ref].value in FANOUT:
+                t = TIGHT - GAP
+                # Not on the microcontroller's radio side: the line to the antenna leaves there.
+                tl = ml if by_ref[ref].value == "nRF54L15" else min(ml, t)
+                fanouts.append((wide, (x - w / 2 - tl, y - h / 2 - min(mt, t), x + w / 2 + min(mr, t), y + h / 2 + min(mb, t))))
+            else:
+                blocked.append(wide)
 
     pads = {}                                      # net -> [(x, y, ref)] of placed pads
     claims = {}
@@ -168,13 +223,14 @@ def place(comps, card):
     for ref in placed:
         register(by_ref[ref])
 
-    def free(x, y, w, h, room=0.0):
+    def free(x, y, w, h, room=0.0, near=False):
         box = S.Placed("", "x", "top", x - w / 2 - S.EDGE, y - h / 2 - S.EDGE, w + 2 * S.EDGE, h + 2 * S.EDGE)
         if not S.on_board(box, card):
             return False
         g = max(GAP, room)
         x0, y0, x1, y1 = x - w / 2 - g, y - h / 2 - g, x + w / 2 + g, y + h / 2 + g
-        return not any(x0 < b[2] and b[0] < x1 and y0 < b[3] and b[1] < y1 for b in blocked)
+        return not any(x0 < b[2] and b[0] < x1 and y0 < b[3] and b[1] < y1
+                       for b in blocked + [f[near] for f in fanouts])
 
     def targets(c):
         """For each pin worth pulling on, the pad it should end up next to."""
@@ -209,6 +265,7 @@ def place(comps, card):
         cy = sum(q[1] for q in want.values()) / len(want)
         best = None
         room = ROOM.get(c.value, 0.0)
+        near = c.sym.name == "C" and len(want) == 1 and c.value != "tune" and not set(c.nets.values()) & set(RF_NETS)
         n = int(REACH / STEP)
         for rot in (0, 90, 180, 270):
             w, h = size(fp, rot)
@@ -217,7 +274,7 @@ def place(comps, card):
                 for j in range(-n, n + 1):
                     x, y = cx + i * STEP, cy + j * STEP
                     cost = sum(math.hypot(x + local[num][0] - q[0], y + local[num][1] - q[1]) for num, q in want.items())
-                    if (best is None or cost < best[0]) and free(x, y, w, h, room):
+                    if (best is None or cost < best[0]) and free(x, y, w, h, room, near):
                         best = (cost, x, y, rot)
         assert best, f"no room for {c.ref}"
         _, x, y, rot = best
@@ -259,11 +316,36 @@ def layout() -> dict:
     m = 0.3
     rf_region = [round(v, 3) for v in (min(b[0] for b in boxes) - m, min(b[1] for b in boxes) - m,
                                        max(b[2] for b in boxes) + m, max(b[3] for b in boxes) + m)]
+    if rf_region[1] < 0.8:
+        rf_region[1] = 0.0            # no sliver of pour between the radio parts and the board's edge
     keepouts = [{"name": pl.name, "face": pl.face, "x": pl.x, "y": pl.y, "w": pl.w, "h": pl.h}
                 for pl in S.layout(card) if pl.part is None]
+    # Where the router and the ground vias are not free (gen/route_checks.py holds the rules).
+    # radio: a matching part, no other net's track on the top layer and no other net's via.
+    # line: the radio line's way out of the chip, no other net's via. crystal: as radio.
+    # gasket: no via at all, a hole there leaks sound. antenna: no track on the inner signal
+    # layer or the bottom, and no signal via.
+    grown = lambda q, m: [round(q[0] - m, 3), round(q[1] - m, 3), round(q[2] + m, 3), round(q[3] + m, 3)]
+    reserved = [{"kind": "radio", "name": "matching network", "box": grown(q, 0.4)} for q in boxes[:-1]]
+    first = min(boxes[:-1], key=lambda q: math.hypot((q[0] + q[2]) / 2 - ant_pin[0], (q[1] + q[3]) / 2 - ant_pin[1]))
+    # Only the row of the radio pin: its neighbours have to leave the chip on their own rows.
+    reserved.append({"kind": "line", "name": "radio line from the pin", "box": [
+        round((first[0] + first[2]) / 2 - 0.3, 3), round(ant_pin[1] - 0.3, 3), round(ant_pin[0] - 0.35, 3), round(ant_pin[1] + 0.3, 3)]})
+    for part in parts:
+        if "Hz" in part["value"] and part["ref"].startswith("Y"):
+            w, h = size(part["footprint"], part["rot"])
+            reserved.append({"kind": "crystal", "name": part["ref"], "box": [
+                round(part["x"] - w / 2 - 0.15, 3), round(part["y"] - h / 2 - 0.15, 3),
+                round(part["x"] + w / 2 + 0.15, 3), round(part["y"] + h / 2 + 0.15, 3)]})
+    for k in keepouts:
+        if "gasket" in k["name"]:
+            reserved.append({"kind": "gasket", "name": k["name"], "box": [k["x"], k["y"], k["x"] + k["w"], k["y"] + k["h"]]})
+        if k["name"].startswith("antenna"):
+            reserved.append({"kind": "antenna", "name": k["name"],
+                             "box": [k["x"], k["y"], k["x"] + k["w"] + 0.8, k["y"] + k["h"] + 0.8]})
     return {"lib": LIB_NAME, "project": PROJECT, "length": round(L, 3), "width": round(W, 3),
             "corner_r": round(card.board_corner_r, 3), "thickness": card.board_t, "keepouts": keepouts,
-            "rf_region": rf_region,
+            "rf_region": rf_region, "reserved": reserved,
             "rules": RULES, "parts": parts}
 
 

@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -216,3 +217,28 @@ def test_call_sensor_pins_are_the_datasheets():
 
 def test_no_vibration_motor_and_no_screen():
     assert not any(w in c.value.lower() for c in build() for w in ("haptic", "motor", "display", "oled"))
+
+
+def test_battery_tracks_are_wider_still():
+    from gen.board import BATTERY_NETS, BATTERY_WIDTH
+    assert _share_at_width(BATTERY_NETS, BATTERY_WIDTH) > 0.85
+
+
+def test_routing_keeps_to_the_reserved_areas():
+    """The radio line short, on top and alone; nothing under the crystals, the antenna or the
+    microphones' gaskets; no long row of vias cutting the ground plane."""
+    from gen import route_checks
+    if not (NETLIST.with_name("vias.json")).exists():
+        pytest.skip("run `make board` first")
+    assert route_checks.problems() == []
+
+
+def test_chips_have_ground_vias_under_them():
+    vias = json.loads(NETLIST.with_name("vias.json").read_text()) if NETLIST.with_name("vias.json").exists() else None
+    if vias is None:
+        pytest.skip("run `make board` first")
+    board = json.loads(NETLIST.with_name("board.json").read_text())
+    for value, least in (("nRF54L15", 9), ("nPM1300", 4)):
+        part = next(p for p in board["parts"] if p["value"] == value)
+        under = [v for v in vias if v[0] == "GND" and abs(v[1] - part["x"]) < 1.9 and abs(v[2] - part["y"]) < 1.9]
+        assert len(under) >= least, value

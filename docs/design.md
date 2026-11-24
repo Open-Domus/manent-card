@@ -276,22 +276,34 @@ What is done:
 
 - **The board is routed.** `make route` gives it to Freerouting and brings the result back;
   KiCad's check then finds no rule broken and no connection open. Signals run on the top
-  layer, the second inner layer and, a little, the bottom: 811 segments, 1.56 m in all,
-  129 vias. The first inner layer is ground only; no signal runs on it.
-- The router is not given the ground. Before it starts, a script puts a via beside the
-  ground pad of each small part, so that the router goes around them. After it, the two
-  outer layers are poured with ground and joined to the plane by 263 vias, each one kept
-  only if KiCad's check accepts it.
-- The radio line is 0.205 mm wide, 50 ohm over a 0.1 mm prepreg on the assumed stack, with
-  no pour beside it on the top layer. Supply tracks are 0.2 mm, the rest 0.1 mm.
+  layer, the second inner layer and, a little, the bottom: 784 segments, 1.55 m in all,
+  93 vias. The first inner layer is ground only; no signal runs on it.
+- The router is not given the ground. Before it starts, a script puts vias under each chip's
+  centre pad (nine under the microcontroller) and one beside the ground pad of each small
+  part, away from the chips, so that the router goes around them. After it, the two outer
+  layers are poured with ground and joined to the plane: 334 ground vias in all, each one
+  kept only if KiCad's check accepts it.
+- The matching network is set out by rule, not by the placer: its series parts in a column
+  from the radio pin towards the antenna, each capacitor to ground on the side away from the
+  chip. The radio line is 10 mm long in all, 0.205 mm wide (50 ohm over a 0.1 mm prepreg on
+  the assumed stack), on the top layer only, with no via and no pour beside it.
+- Supply tracks are 0.2 mm, the way of the charge current (pads, charger, protection, cell)
+  0.3 mm, the rest 0.1 mm.
+- Some areas are reserved (`reserved` in `electrical/out/board.json`), and
+  `electrical/gen/route_checks.py` throws away a routing that does not keep to them: no other
+  net's via or top-layer track among the matching parts; nothing but their own nets under the
+  two crystals; no track on the inner signal layer or the bottom under the antenna and for
+  0.8 mm around its corner; no via under a microphone's gasket; no row of signal vias longer
+  than 2 mm, which would cut the plane; the radio line short for the distance it covers.
 - The route kept is in `electrical/kicad/card.ses` and `stitch.json`, and `make board`
-  rebuilds the board from them. The router gives a different result each time, so
-  `make route` is not part of `make all`; after a change to the circuit or the placement
-  it must be run again.
+  rebuilds the board from them. The router gives a different result each time and most of
+  them fail one check or another, so `make route` tries several times and is not part of
+  `make all`; after a change to the circuit or the placement it must be run again.
 
-What is not done: the routing is a machine's, and so is the placement. Nobody has looked at
-the power loops, the crystal's surroundings or the return paths, and the board's stack is
-assumed, not quoted. The footprints
+What is not done: the routing is a machine's, and so is most of the placement. It was looked
+at once by eye (see [review.md](review.md)); the board's stack is assumed, not quoted. The
+decoupling capacitors stand 2 to 4 mm from the pins they serve: with 0.4 mm vias the pins
+need that room to reach the inner layer, and nearer would take smaller vias. The footprints
 of the switch, the button, the light and the call sensor are drawn from their makers'
 drawings; those of the antenna and the cell tabs are placeholders until those are chosen.
 Protection diodes are placed at their pads. The board is five times longer than it is wide and

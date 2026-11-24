@@ -87,7 +87,7 @@ def ground_plane(points):
     z.SetNet(nets["GND"])
     z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
     z.SetMinThickness(mm(0.1))
-    z.SetLocalClearance(mm(0.15))
+    z.SetLocalClearance(mm(0.1))        # narrow, so that a row of vias does not cut the plane
     z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
     board.Add(z)
 

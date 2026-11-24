@@ -48,6 +48,9 @@ while [ "$attempt" -lt "${1:-6}" ]; do
   "$k" place > /dev/null; "$k" py gen/pcb_route.py import out/card.ses > /dev/null; "$k" check > /dev/null
   open="$(signals_open)"; echo "  signals open in KiCad: $open"
   [ "$open" = "0" ] || continue
+  # And what KiCad's rules do not know: the radio's and the crystals' surroundings, the plane.
+  python3 "$here/../electrical/gen/route_checks.py" | sed 's/^/  /' | head -12
+  python3 "$here/../electrical/gen/route_checks.py" > /dev/null || continue
   "$k" py gen/pcb_stitch.py grid out/try.json out/pre.json > /dev/null
   settle
   option=0
@@ -60,7 +63,7 @@ while [ "$attempt" -lt "${1:-6}" ]; do
   cp "$out/stitch.json" "$out/try.json"; settle
   "$k" py gen/pcb_stitch.py islands out/stitch.json out/try.json > /dev/null; settle
   kicad="$(verdict)"; echo "  with the ground joined: KiCad $kicad"
-  if [ "$kicad" = "0 violations, 0 open" ]; then
+  if [ "$kicad" = "0 violations, 0 open" ] && python3 "$here/../electrical/gen/route_checks.py" > /dev/null; then
     cp "$out/card.ses" "$out/stitch.json" "$here/../electrical/kicad/"   # kept so `make board` can rebuild them
     exit 0
   fi

@@ -31,8 +31,34 @@ if sys.argv[1] == "export":
     # The pin kept is the ground test point: a wide pad with room for the one via it needs.
     text, n = re.subn(r"(\n    \(net GND\n      \(pins )[^)]*\bTP5-1\b[^)]*\)", r"\1TP5-1)", text)
     assert n == 1
+    # Areas the router must respect (board.json, "reserved"); y points down in KiCad, up here.
+    data = json.loads((HERE / "out" / "board.json").read_text())
+    um = lambda v: round(v * 1000)
+    rect = lambda layer, q: f"(rect {layer} {um(q[0])} {-um(q[3])} {um(q[2])} {-um(q[1])})"
+    lines = []
+    for r in data["reserved"]:
+        lines += [f'    (via_keepout "{r["name"]}" {rect(layer, r["box"])})' for layer in ("F.Cu", "In2.Cu", "B.Cu")]
+        if r["kind"] == "antenna":
+            lines += [f'    (keepout "{r["name"]}" {rect(layer, r["box"])})' for layer in ("In2.Cu", "B.Cu")]
+    for fp in board.GetFootprints():        # nothing between the two pads of a crystal
+        boxes = [p.GetBoundingBox() for p in fp.Pads() if p.GetNumber() and p.IsOnLayer(pcbnew.F_Cu)]
+        if fp.GetReference().startswith("Y") and len(boxes) == 2:
+            a, b = sorted(boxes, key=lambda q: (q.GetLeft(), q.GetTop()))
+            mmv = pcbnew.ToMM
+            if a.GetRight() < b.GetLeft():
+                q = (mmv(a.GetRight()) + 0.2, mmv(a.GetTop()), mmv(b.GetLeft()) - 0.2, mmv(a.GetBottom()))
+            else:
+                q = (mmv(a.GetLeft()), mmv(a.GetBottom()) + 0.2, mmv(a.GetRight()), mmv(b.GetTop()) - 0.2)
+            if q[2] > q[0] and q[3] > q[1]:
+                lines.append(f'    (keepout "{fp.GetReference()}" {rect("F.Cu", q)})')
+    # The radio line stays on the top layer, over the plane: no via, no inner layer.
+    text, n = re.subn(r"(\(class Radio\b.*?\(circuit\s*)", r"\1(use_layer F.Cu)\n      ", text, flags=re.S)
+    assert n == 1
+    marker = '\n    (via "Via'
+    assert marker in text                   # the first one is in the structure section
+    text = text.replace(marker, "\n" + "\n".join(lines) + marker, 1)
     dsn.write_text(text)
-    print("out/card.dsn written")
+    print(f"out/card.dsn written, {len(lines)} keep-outs")
 else:
     assert pcbnew.ImportSpecctraSES(board, str(HERE / sys.argv[2]))
     narrow = 0
@@ -96,4 +122,7 @@ else:
              pcbnew.ToMM(t.GetStart().x), pcbnew.ToMM(t.GetStart().y), pcbnew.ToMM(t.GetEnd().x), pcbnew.ToMM(t.GetEnd().y)]
             for t in tracks if t.Type() != pcbnew.PCB_VIA_T]
     (HERE / "out" / "tracks.json").write_text(json.dumps(rows) + "\n")
+    (HERE / "out" / "vias.json").write_text(json.dumps(
+        [[t.GetNetname(), pcbnew.ToMM(t.GetPosition().x), pcbnew.ToMM(t.GetPosition().y)]
+         for t in tracks if t.Type() == pcbnew.PCB_VIA_T]) + "\n")
     print(f"{len(tracks) - vias} track segments, {vias} vias -> card.kicad_pcb")

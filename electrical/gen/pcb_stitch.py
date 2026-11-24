@@ -39,13 +39,18 @@ if cmd in ("pre", "grid", "apply", "pads", "islands"):
     pcb = str(HERE / "kicad" / "card.kicad_pcb")
     board = pcbnew.LoadBoard(pcb)
     data = load("out/board.json")
+    # No ground via under a microphone's gasket or in the antenna's corner.
+    no_via = [r["box"] for r in data["reserved"] if r["kind"] == "gasket"]
+    no_via += [[k["x"], k["y"], k["x"] + k["w"], k["y"] + k["h"]] for k in data["keepouts"] if k["name"].startswith("antenna")]
+    barred = lambda x, y, m=0.12: any(q[0] - m < x < q[2] + m and q[1] - m < y < q[3] + m for q in no_via)
+    copper = lambda pad: pad.IsOnLayer(pcbnew.F_Cu) or pad.IsOnLayer(pcbnew.B_Cu)      # not a paste opening
 
 if cmd == "grid":
     boxes = []
     for fp in board.GetFootprints():
         for pad in fp.Pads():
             b = pad.GetBoundingBox()
-            if pad.GetNetname() == "GND" and min(b.GetWidth(), b.GetHeight()) > mm(2.0):
+            if not copper(pad) or (pad.GetNetname() == "GND" and min(b.GetWidth(), b.GetHeight()) > mm(2.0)):
                 continue                     # the exposed pad of a chip: vias in it are welcome
             boxes.append((pcbnew.ToMM(b.GetLeft()) - PAD_MARGIN, pcbnew.ToMM(b.GetTop()) - PAD_MARGIN,
                           pcbnew.ToMM(b.GetRight()) + PAD_MARGIN, pcbnew.ToMM(b.GetBottom()) + PAD_MARGIN))
@@ -54,7 +59,7 @@ if cmd == "grid":
     while y <= data["width"] - INSET:
         x = INSET
         while x <= data["length"] - INSET:
-            if not any(b[0] < x < b[2] and b[1] < y < b[3] for b in boxes):
+            if not any(b[0] < x < b[2] and b[1] < y < b[3] for b in boxes) and not barred(x, y):
                 vias.append([round(x, 3), round(y, 3), ""])
             x += PITCH
         y += PITCH
@@ -83,6 +88,8 @@ elif cmd == "apply":
     board.BuildConnectivity()
     pcbnew.ZONE_FILLER(board).Fill(board.Zones())
     pcbnew.SaveBoard(pcb, board)
+    save("out/vias.json", [[t.GetNetname(), pcbnew.ToMM(t.GetPosition().x), pcbnew.ToMM(t.GetPosition().y)]
+                           for t in board.GetTracks() if t.Type() == pcbnew.PCB_VIA_T])
     print(f"{len(d['vias'])} ground vias, {len(d['tracks'])} ground tracks on the board")
 
 elif cmd == "judge":
@@ -117,16 +124,25 @@ elif cmd == "pads":
     reach = (0.4, 0.75, 1.1)[option // 8]
     ux, uy = ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1))[option % 8]
     tried = 0
+    lands = []                                # every copper pad: a via does not go into a land
+    for fp in board.GetFootprints():
+        for pad in fp.Pads():
+            if copper(pad):
+                b = pad.GetBoundingBox()
+                lands.append((pcbnew.ToMM(b.GetLeft()), pcbnew.ToMM(b.GetTop()), pcbnew.ToMM(b.GetRight()), pcbnew.ToMM(b.GetBottom())))
     for fp in board.GetFootprints():
         for pad in fp.Pads():
             b = pad.GetBoundingBox()
             hw, hh = pcbnew.ToMM(b.GetWidth()) / 2, pcbnew.ToMM(b.GetHeight()) / 2
             owner = f"{fp.GetReference()}.{pad.GetNumber()}"
-            if pad.GetNetname() != "GND" or not pad.IsOnLayer(pcbnew.F_Cu) or max(hw, hh) > 1.0 or owner in served:
+            if (pad.GetNetname() != "GND" or not pad.IsOnLayer(pcbnew.F_Cu) or not pad.GetNumber() or max(hw, hh) > 1.0
+                    or owner in served):
                 continue
             c = pad.GetPosition()
             cx, cy = pcbnew.ToMM(c.x), pcbnew.ToMM(c.y)
             x, y = round(cx + ux * (hw + reach), 3), round(cy + uy * (hh + reach), 3)
+            if barred(x, y) or any(q[0] - 0.3 < x < q[2] + 0.3 and q[1] - 0.3 < y < q[3] + 0.3 for q in lands):
+                continue
             out["vias"].append([x, y, f"{owner}/{option}"])
             out["tracks"].append([round(cx, 3), round(cy, 3), x, y, f"{owner}/{option}"])
             tried += 1
@@ -178,15 +194,46 @@ elif cmd == "pre":
     boxes = []                                # (pad, left, top, right, bottom) of every pad
     for fp in board.GetFootprints():
         for pad in fp.Pads():
-            if not (pad.IsOnLayer(pcbnew.F_Cu) or pad.IsOnLayer(pcbnew.B_Cu)):
-                continue                      # a paste opening, no copper
+            if not copper(pad):
+                continue
             b = pad.GetBoundingBox()
             boxes.append((pad, pcbnew.ToMM(b.GetLeft()), pcbnew.ToMM(b.GetTop()), pcbnew.ToMM(b.GetRight()), pcbnew.ToMM(b.GetBottom())))
-    off = [(k["x"], k["y"], k["x"] + k["w"], k["y"] + k["h"]) for k in data["keepouts"] if k["name"].startswith("antenna")]
-    off.append(tuple(data["rf_region"]))
+    off = [tuple(q) for q in no_via]
     gap = lambda x, y, b: math.hypot(max(b[1] - x, 0, x - b[3]), max(b[2] - y, 0, y - b[4]))
     out = {"vias": [], "tracks": []}
     missed = []
+    # The pad under a chip is its ground: a square of vias in it, straight into the plane.
+    for fp in board.GetFootprints():
+        for pad in fp.Pads():
+            b = pad.GetBoundingBox()
+            w, h = pcbnew.ToMM(b.GetWidth()), pcbnew.ToMM(b.GetHeight())
+            if pad.GetNetname() == "GND" and copper(pad) and min(w, h) > 2.0:
+                c = pad.GetPosition()
+                nx, ny = max(2, int((w - 1.0) / 1.6) + 1), max(2, int((h - 1.0) / 1.6) + 1)
+                for i in range(nx):
+                    for j in range(ny):
+                        out["vias"].append([round(pcbnew.ToMM(c.x) + (i - (nx - 1) / 2) * (w - 1.0) / (nx - 1), 3),
+                                            round(pcbnew.ToMM(c.y) + (j - (ny - 1) / 2) * (h - 1.0) / (ny - 1), 3), ""])
+    under_chips = len(out["vias"])
+    # The straight ways between the pads of each radio net: a ground via in one of them sends
+    # the radio line the long way round.
+    net_settings = load("kicad/card.kicad_pro")["net_settings"]
+    radio = {q["pattern"] for q in net_settings["netclass_patterns"] if q["netclass"] == "Radio"}
+    ways = []
+    for net in radio:
+        ends = [((o[1] + o[3]) / 2, (o[2] + o[4]) / 2) for o in boxes if o[0].GetNetname() == net]
+        ways += [(a, b) for i, a in enumerate(ends) for b in ends[i + 1:] if math.dist(a, b) < 4.0]
+
+    def off_way(x, y, a, b):
+        L = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
+        t = 0 if L == 0 else max(0, min(1, ((x - a[0]) * (b[0] - a[0]) + (y - a[1]) * (b[1] - a[1])) / L))
+        return math.hypot(x - a[0] - t * (b[0] - a[0]), y - a[1] - t * (b[1] - a[1]))
+
+    chips = []                                # the land patterns of the parts with many pins
+    for fp in board.GetFootprints():
+        own = [o for o in boxes if o[0].GetParentFootprint().GetReference() == fp.GetReference()]
+        if len(own) > 8:
+            chips.append((min(o[1] for o in own), min(o[2] for o in own), max(o[3] for o in own), max(o[4] for o in own)))
     for fp in board.GetFootprints():
         if len(fp.Pads()) > 6:
             continue                          # a chip's ground pins are joined after routing
@@ -199,13 +246,14 @@ elif cmd == "pre":
             c = pad.GetPosition()
             cx, cy = pcbnew.ToMM(c.x), pcbnew.ToMM(c.y)
             others = [o for o in boxes if o[0].GetPosition() != c or o[0].GetParentFootprint().GetReference() != fp.GetReference()]
+            found = []
             for option in range(24):
                 reach = (0.4, 0.75, 1.1)[option // 8]
                 ux, uy = ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1))[option % 8]
                 x, y = round(cx + ux * (hw + reach), 3), round(cy + uy * (hh + reach), 3)
                 if not (INSET <= x <= data["length"] - INSET and INSET <= y <= data["width"] - INSET):
                     continue
-                if any(k[0] - 0.4 < x < k[2] + 0.4 and k[1] - 0.4 < y < k[3] + 0.4 for k in off):
+                if any(k[0] - 0.12 < x < k[2] + 0.12 and k[1] - 0.12 < y < k[3] + 0.12 for k in off):
                     continue
                 if any(gap(x, y, o) < VIA / 2 + 0.15 for o in others):
                     continue
@@ -214,10 +262,17 @@ elif cmd == "pre":
                     continue
                 if any(math.hypot(x - q[0], y - q[1]) < 0.7 for q in out["vias"]):
                     continue
+                if any(off_way(px, py, a, b) < 0.42 for px, py in along[4:] for a, b in ways):   # past the pad itself
+                    continue
+                # Away from the chips: the room next to their pins is for their own vias.
+                away = min([math.hypot(max(q[0] - x, 0, x - q[2]), max(q[1] - y, 0, y - q[3])) for q in chips] + [3.0])
+                found.append((away - 0.5 * reach, -option, x, y, option))
+            if found:
+                _, _, x, y, option = max(found)
                 out["vias"].append([x, y, f"{owner}/{option}"])
                 out["tracks"].append([round(cx, 3), round(cy, 3), x, y, f"{owner}/{option}"])
-                break
             else:
                 missed.append(owner)
     save(sys.argv[2], out)
-    print(f"{len(out['vias'])} ground pads given a via before routing; none found for {missed}")
+    print(f"{under_chips} vias under chips, {len(out['vias']) - under_chips} ground pads given a via before routing; "
+          f"none found for {missed}")

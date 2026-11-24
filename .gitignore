@@ -19,3 +19,4 @@ electrical/out/try.json
 electrical/out/stitch.json
 mechanical/out/*.step
 electrical/out/pre.json
+electrical/out/vias.json
