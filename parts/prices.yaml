@@ -19,9 +19,8 @@ parts:
   - {match: 2.2uH, low: 0.08, high: 0.20, source: estimate}
   - {match: 4.7uH, low: 0.03, high: 0.08, source: estimate}
   - {match: 2.4 GHz, low: 0.15, high: 0.40, source: estimate}
-  - {match: RB521ZS-30, low: 0.02, high: 0.05, source: estimate}
   - {match: 10k NTC, low: 0.02, high: 0.05, source: estimate}
-  - {match: ferrite bead, low: 0.01, high: 0.03, source: estimate}
+  - {match: BLM03AG121SN1D, low: 0.01, high: 0.03, source: estimate}
   - {match: Murata RF, low: 0.02, high: 0.05, source: "estimate, each of the five matching parts"}
 passive: {low: 0.003, high: 0.012, source: "estimate, each resistor or capacitor"}
 

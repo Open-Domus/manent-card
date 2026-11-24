@@ -83,8 +83,8 @@ contact pads --TVS-- VBUS --> [ nPM1300 ] <--> cell (+ protection)
                   1.8 V buck --+  |  +-- load switch 2 --> flash supply
                                |  +----- load switch 1 --> RECORDING SWITCH --> listening supply --> light
                                v                                  |
-   button --+--> SHPHLD     [ nRF54L15 ] <----- 10k --------------+
-            +-|<|-> wake      |  |  |
+   button -----> SHPHLD     [ nRF54L15 ] <----- 10k --------------+
+                              |  |  |
                          SPI --+  |  +-- matching -- tuning -- antenna
                           v       +--PDM--> microphone A + call sensor; microphone B
                     256 Mbit flash
@@ -125,8 +125,7 @@ filtering and antenna matching follow the ring's verified circuit with the QFN v
 | Recording switch, read | P1.08 | port 1 can wake the chip |
 | Microphone power request | P1.13 | to the power chip's GPIO1, which drives load switch 1 |
 | Flash clock, out, in, select | P2.01, P2.02, P2.04, P2.05 | the dedicated fast-SPI pins |
-| Power chip clock, data, interrupt | P0.03, P0.02, P0.01 | clock on a clock pin; port 0 can wake the chip |
-| Button | P0.00 | port 0 can wake the chip |
+| Power chip clock, data, interrupt | P0.03, P0.02, P0.01 | clock on a clock pin; port 0 can wake the chip. The button arrives through this interrupt |
 | Extra light | P0.04 | |
 | Test serial port | P1.11, P1.12 | test pads on the board |
 | 32.768 kHz crystal | P1.00, P1.01 | fitted |
@@ -149,7 +148,7 @@ serves both. `electrical/gen/checks.py` enforces these rules on every build.
   about 1.6. The 512 Mbit and 1 Gbit parts fit the same pads if a buyer wants the day.
   It sits behind load switch 2.
 - **A thermistor by the cell tabs.** The charger reads it and stops when the closed card is
-  too warm or too cold. The band grounds that pin.
+  too warm or too cold. The ring, the band and the pendant have one too.
 - **Bluetooth only.** At an assumed 400 kbit/s an hour of audio crosses in about two and a
   half minutes, and it crosses while it is being recorded if the phone is in reach. Wi-Fi
   would bring a second radio and its current for a need the card does not have.
@@ -168,8 +167,18 @@ serves both. `electrical/gen/checks.py` enforces these rules on every build.
   protection diode, because fingers reach them.
 - **The larger power chip.** Half the cell's capacity per hour is 225 mA, which fills it
   in about two and a half hours. The band's chip cannot give more than 100.
-- **Button to two chips**, as on the ring: to the power chip's ship-mode input, and through
-  a diode to the microcontroller.
+- **Button to the power chip only**, as on the ring: to its ship-mode input. The
+  microcontroller learns of a press and its release from the power chip's interrupt. The
+  first draft also ran it through a diode to a microcontroller pin; that diode and pin are
+  gone. The cost is a few milliseconds per press, to be measured.
+- **The circuit around both Nordic chips is Nordic's.** Their reference layouts
+  (nRF54L15-QFAA 0.8; nPM1304-QEAA 1.0, configuration 2, the sibling of this card's
+  nPM1300 with the same pins) were opened as boards with KiCad's Altium importer on
+  2026-11-24, which gives the net of every part. That added a 1 k and 3.9 pF filter on the
+  reset pin, 2.2 nF on DECA and 0.3 pF at the end of the matching network, fixed the bead
+  at 120 ohm (the ring's BLM03AG121SN1D), took the unused buck's output from ground to VSYS
+  and gave VSYS a second 10 uF at the buck's input. The cell capacitor stays at 10 uF where
+  the nPM1304 reference has 2.2, until the nPM1300's own files are read.
 
 ## Phone calls
 

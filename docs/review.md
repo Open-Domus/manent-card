@@ -32,7 +32,7 @@ calculation made. None of it is a measurement.
 | Antenna 1.5 mm over aluminium | Both skins stop 10 mm short at the antenna end; plastic there. The antenna is tuned for the card on a table, the case that needs range | Range still unmeasured |
 | Bending, with a lithium pouch inside | Both skins aluminium. Calculated: 0.08 mm of sag and a 4.9 m radius under 100 N on 70 mm if the skins are glued to the frame; useless if they slip | The glue line is the structural part and is not designed; no cell maker has said what radius a pouch tolerates |
 | Four placeholder land patterns | Switch, button, light and call sensor are now drawn from their makers' documents. The call sensor's pin numbers are the datasheet's, and the earlier guess was wrong on every pin | The button's and switch's patterns are assumed centred under the body |
-| Nordic pin tables read once | Both read again, word for word, by a second reader: no difference on any of 81 pins | The supply filtering and antenna matching, taken from the ring, are still not checked against Nordic's layout files |
+| Nordic pin tables read once | Both read again, word for word, by a second reader: no difference on any of 81 pins | The supply filtering and antenna matching were checked against Nordic's layout files on 2026-11-24: see below |
 | Firmware rules nowhere written | `firmware-requirements.md`: fourteen rules, each with a check | Nothing enforces them but a review of the firmware |
 | Debug port outside, audio readable from a lost card | Rule 5: access protection on, audio in the flash encrypted with a key that the chip erase destroys | Firmware work; the hardware is unchanged |
 | A slide switch carrying one milliamp | The Alps part is rated down to 50 uA; the card draws about 1.3 mA | Its minimum is stated at 3 V and the rail is 1.8 V: watch for it on the first cards |
@@ -41,6 +41,26 @@ calculation made. None of it is a measurement.
 | Cell tabs with no way to the board | The cell is ordered with a flexible tail; the rib has a gap by the pads for it | Not in the fit model: the tail is not drawn |
 | The charging pad's protection diode 10 mm from the pad | The placer now puts protection diodes at their pads; a test checks all three | |
 | Call sensor "pressed to the skin" | Its datasheet says it senses across the board, which is how a phone's back moves, and asks for no class 2 capacitor beside it: the capacitor next to it is now C0G | Whether it hears enough is still the first measurement |
+
+## Checked against Nordic's reference layouts, 2026-11-24
+
+The layout files of the nRF54L15-QFAA (0.8) and of the nPM1304-QEAA (1.0, configuration 2:
+one buck, a load switch, an LED) were opened as boards with KiCad's Altium importer, which
+gives the net of every part. The nPM1304 is the nPM1300's sibling with the same pins; the
+nPM1300's own files were not opened.
+
+| Was | Reference | Now |
+| --- | --- | --- |
+| Reset pin straight to its test pad | 1 k in series, 3.9 pF to ground at the pin, which is next to the antenna pin | as the reference |
+| DECA: 2.2 uF and 10 nF | also 2.2 nF | as the reference |
+| End of the matching network: a shunt place left empty | 0.3 pF to ground | fitted |
+| Ferrite bead "to choose" | 120 ohm at 100 MHz, 200 mA, 0.5 ohm | the ring's BLM03AG121SN1D |
+| Unused buck output to ground, "not confirmed" | to VSYS | to VSYS |
+| One 10 uF on VSYS | two: buck input and output | two |
+| 10 uF on the cell | 2.2 uF | kept at 10 uF until the nPM1300's files are read |
+| Button also through a Schottky diode to P0.00 | (the ring's choice, not the reference's) | to the power chip only; its interrupt tells the microcontroller |
+
+The order of the matching parts and every other capacitor were where the draft had them.
 
 ## Still open, most serious first
 
@@ -114,6 +134,6 @@ first result. What that found, and what was done:
 ## Not checked at all
 
 In the routing: the power loops of the two converters in detail, and the return paths of
-the long microphone lines. The supply filtering of the microcontroller, taken from the ring. Tolerances: every
+the long microphone lines. Tolerances: every
 gap in the fit model is nominal. Electromagnetic compatibility, safety of the cell,
 drop, and anything that needs the thing in a hand.

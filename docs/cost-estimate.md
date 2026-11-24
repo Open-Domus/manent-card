@@ -29,10 +29,9 @@ estimates. Each line has a low and a high figure; the truth may still be outside
 | 2.2uH, VLS201610HBX-2R2M-1 | 1 | 0.08 | 0.20 | estimate |
 | 4.7uH, PLEA67BCA4R7M-1PT00 | 1 | 0.03 | 0.08 | estimate |
 | 10k NTC | 1 | 0.02 | 0.05 | estimate |
-| Schottky, RB521ZS-30 | 1 | 0.02 | 0.05 | estimate |
-| ferrite bead | 1 | 0.01 | 0.03 | estimate |
-| resistors and capacitors | 36 | 0.11 | 0.43 | estimate, each resistor or capacitor |
-| **Parts on the board** | | **12.02** | **20.68** | |
+| 120R@100MHz, BLM03AG121SN1D | 1 | 0.01 | 0.03 | estimate |
+| resistors and capacitors | 41 | 0.12 | 0.49 | estimate, each resistor or capacitor |
+| **Parts on the board** | | **12.01** | **20.69** | |
 
 The contact pads and the cell are not in this table: pads are copper, the cell is below.
 
@@ -52,10 +51,10 @@ The contact pads and the cell are not in this table: pads are copper, the cell i
 | Box and leaflet | 0.60 | 1.50 | estimate |
 | **Everything else** | **14.70** | **30.40** | |
 
-**One card, in its box with sleeve and charger: 26.72 to 51.08 dollars.**
+**One card, in its box with sleeve and charger: 26.71 to 51.09 dollars.**
 
 Hand work in Italy is the largest line, 5.00 to 9.00; the electronics with board and assembly are
-13.92 to 24.58. Shipping, duty, returns and the seller's margin are not counted.
+13.91 to 24.59. Shipping, duty, returns and the seller's margin are not counted.
 
 ## Paid once
 
@@ -68,7 +67,7 @@ Hand work in Italy is the largest line, 5.00 to 9.00; the electronics with board
 | **Paid once** | **11,300** | **28,000** | |
 
 Spread over a thousand cards that is 11.30 to 28.00 dollars each, so the first thousand cost
-38.02 to 79.08 each. Approval for other markets (United States, United Kingdom) is not counted,
+38.01 to 79.09 each. Approval for other markets (United States, United Kingdom) is not counted,
 nor is the work of designing what is not designed yet.
 
 ## The first ten cards
@@ -89,7 +88,7 @@ round of boards is likely once the unread datasheets have been read.
 
 Plaud sells its Note at 159 dollars and Amazon the Bee Eclipse at 99.99, the second with a
 subscription behind it. A common rule for hardware sold directly is a price of three to four
-times what the thing costs to make: on 38.02 to 79.08 that is 114 to 316 dollars.
+times what the thing costs to make: on 38.01 to 79.09 that is 114 to 316 dollars.
 
 ## What moves the figure most
 
