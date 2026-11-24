@@ -37,7 +37,7 @@ are trade size codes with estimated capacities, not a supplier's drawing.
 
 - **Room for the cell**: 81.3 x 36.1 x 2.13 (thickness before swelling).
 - **Cell**: 203580, 80.0 x 35.0 x 2.0, about 450 mAh. Spare: 1.3 in length, 1.1 in width, 0.14 in height.
-- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 242.5; the 58 small parts need 48.8, 5% of what is free.
+- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 242.5; the 58 small parts need 48.9, 5% of what is free.
 - **Microphones**: 76.6 apart.
 - **Slider**: stands 0.55 out of the bottom of its hollow in the edge; 0.5 is the least accepted.
 - **Mass** (estimate): two aluminium skins 12.0 g, glass-filled plastic frame and antenna end 1.6 g, board 1.88 g, cell 10.35 g: about 25.9 g.
@@ -59,7 +59,7 @@ are trade size codes with estimated capacities, not a supplier's drawing.
 
 - **Room for the cell**: 81.3 x 36.1 x 1.67 (thickness before swelling).
 - **Cell**: 153580, 80.0 x 35.0 x 1.5, about 335 mAh. Spare: 1.3 in length, 1.1 in width, 0.18 in height.
-- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 242.5; the 58 small parts need 48.8, 5% of what is free.
+- **Board**: 82.6 x 14.0, 1156.4 mm2. Large parts and keep-outs take 242.5; the 58 small parts need 48.9, 5% of what is free.
 - **Microphones**: 76.6 apart.
 - **Slider**: stands 0.55 out of the bottom of its hollow in the edge; 0.5 is the least accepted.
 - **Mass** (estimate): two aluminium skins 12.0 g, glass-filled plastic frame and antenna end 1.3 g, board 1.88 g, cell 7.71 g: about 23.0 g.

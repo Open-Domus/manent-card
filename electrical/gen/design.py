@@ -188,8 +188,9 @@ def build() -> list[Component]:
              "BUCK2 unused: VSET2 grounded as documented; SW2 open and VOUT2 grounded are not confirmed. "
              "LED0-2, GPIO2-4 left open: not confirmed. CC1 and CC2 grounded: the input limit starts at 100 mA and "
              "firmware must raise it each time the charger is connected")
-    add(L, "2.2uH", "power", ("SW1", "V1V8"), mpn="to choose", package="0806",
-        note="Nordic asks for DCR under 0.4 ohm in 0806 (2.0 x 1.6 mm); part to choose")
+    add(L, "2.2uH", "power", ("SW1", "V1V8"), mpn="VLS201610HBX-2R2M-1", mfr="TDK", package="0806",
+        note="Nordic asks for DCR under 0.4 ohm in 0806 (2.0 x 1.6 mm); this one is 0.17 max, 1.45 A, 1.0 tall. "
+             "The same part on the band, the card and the pendant")
     res("47k", "VSET1", "GND", "power", note="Sets BUCK1 to 1.8 V at power-on")
     res("10k NTC", "NTC", "GND", "power", mpn="to choose",
         note="Thermistor, B about 3380 K, placed by the cell tabs: stops the charge when the closed card is too warm or too cold")
@@ -226,9 +227,9 @@ def build() -> list[Component]:
     res("0.05", "CELL_N", "SENSE", "power", note="Overcurrent sense: about 1 A trip if the threshold is 50 mV (calculated, not from a datasheet). "
         "The band's 0.25 ohm would trip at 200 mA, below this card's 225 mA charge")
     res("470", "VM", "GND", "power")
-    add(NFET, "N-MOSFET", "power", {"1": "PROT_DO", "2": "SENSE", "3": "FET_MID"}, mpn="to choose",
-        note="Discharge FET; a dual common-drain part in about 1x1 mm")
-    add(NFET, "N-MOSFET", "power", {"1": "PROT_CO", "2": "GND", "3": "FET_MID"}, mpn="to choose", note="Charge FET")
+    add(NFET, "N-MOSFET", "power", {"1": "PROT_DO", "2": "SENSE", "3": "FET_MID"}, mpn="PMZB290UNE2", mfr="Nexperia", package="DFN1006B-3",
+        note="Discharge FET; two singles with their drains joined. The same FET in all eight places of the four products")
+    add(NFET, "N-MOSFET", "power", {"1": "PROT_CO", "2": "GND", "3": "FET_MID"}, mpn="PMZB290UNE2", mfr="Nexperia", package="DFN1006B-3", note="Charge FET")
 
     # ---- microcontroller and radio (Nordic QFAA reference circuit, configuration 1: DC/DC, no NFC) --
     # The reference schematic is a picture: values and part numbers were read from its labels,
@@ -244,14 +245,14 @@ def build() -> list[Component]:
     cap("10uF", "V1V8", "mcu_rf", pkg="0603")
     for _ in range(4):
         cap("100nF", "V1V8", "mcu_rf", pkg="0201", note="One next to each side's VDD pin. " + REF)
-    add(L, "4.7uH", "mcu_rf", ("DCC", "DECD"), mpn="to choose", package="0402", note="DC/DC inductor. " + REF)
+    add(L, "4.7uH", "mcu_rf", ("DCC", "DECD"), mpn="PLEA67BCA4R7M-1PT00", mfr="TDK", package="0402", note="DC/DC inductor. " + REF)
     cap("2.2uF", "DECD", "mcu_rf", pkg="0201", note=REF)
     add(FB, "ferrite bead", "mcu_rf", ("DECD", "DECA"), mpn="to choose", package="0201",
         note="The reference gives no value; the ring uses 120 ohm at 100 MHz (BLM03AG121SN1D)")
     cap("2.2uF", "DECA", "mcu_rf", pkg="0201", note=REF)
     cap("10nF", "DECA", "mcu_rf", pkg="0201", note=REF)
-    add(XTAL4, "32MHz", "mcu_rf", {"1": "XC1", "3": "XC2", "2": "GND", "4": "GND"}, mpn="to choose", package="2016",
-        note="2.0 x 1.6 mm, as in the reference; pads 2 and 4 are the lid, grounded: check against the part chosen. "
+    add(XTAL4, "32MHz", "mcu_rf", {"1": "XC1", "3": "XC2", "2": "GND", "4": "GND"}, mpn="CX2016DB32000D0FLJCC", mfr="Kyocera", package="2016",
+        note="2.0 x 1.6 mm, 8 pF, 10 ppm, as the reference asks (8 pF, 40 ppm in all); pads 2 and 4 are the lid, grounded: check against its drawing. "
              "Load capacitors are inside the chip")
     add(XTAL, "32.768kHz 9pF", "mcu_rf", ("XL1", "XL2"), mpn="9HT11-32.768KDZC-T", mfr="TXC", package="2012",
         note="Fitted, unlike on the ring: the card stays connected for weeks and there is room. "
@@ -266,7 +267,7 @@ def build() -> list[Component]:
         note="Antenna tuning, series: value from measurement in a closed card, alone and on a phone")
     cap("tune", "RF_50", "mcu_rf", pkg="0201", dnp=True, note="Antenna tuning, shunt")
     cap("tune", "ANT_FEED", "mcu_rf", pkg="0201", dnp=True, note="Antenna tuning, shunt")
-    add(ANT, "2.4 GHz", "mcu_rf", ("ANT_FEED",), mpn="to choose", package="1608 chip antenna",
+    add(ANT, "2.4 GHz", "mcu_rf", ("ANT_FEED",), mpn="ANT1608LL14R2400A", mfr="Yageo", package="1608 chip antenna",
         note="Chip antenna or printed trace in the corner of the board; decided with the first radio measurements")
 
     # ---- microphones and call sensor: one clock, two data lines ----------------------------
@@ -324,10 +325,10 @@ def build() -> list[Component]:
              "the card shows it on the front and on the edge. Pad 1 is the cathode. Stands only 200 V of static")
     res("3.3k", "LED_K", "LED_SW", "ui",
         note="About 0.5 mA whenever the microphones have power; adjust after a look through the front skin")
-    add(NFET, "N-MOSFET", "ui", {"1": "VMIC", "2": "GND", "3": "LED_SW"}, mpn="to choose",
+    add(NFET, "N-MOSFET", "ui", {"1": "VMIC", "2": "GND", "3": "LED_SW"}, mpn="PMZB290UNE2", mfr="Nexperia", package="DFN1006B-3",
         note="Gate is the microphone rail: the light is on whenever the microphones have power. Vgs(th) under 1 V")
     res("3.3k", "LED_K", "LED_HI", "ui", note="Firmware blinks through this one: a mark taken, charging, an error")
-    add(NFET, "N-MOSFET", "ui", {"1": "LED_AUX", "2": "GND", "3": "LED_HI"}, mpn="to choose",
+    add(NFET, "N-MOSFET", "ui", {"1": "LED_AUX", "2": "GND", "3": "LED_HI"}, mpn="PMZB290UNE2", mfr="Nexperia", package="DFN1006B-3",
         note="Firmware can only add light, never remove the recording light")
     res("100k", "LED_AUX", "GND", "ui", note="Off while the SoC is in reset")
     for label, net in (("SWDIO", "SWDIO"), ("SWDCLK", "SWDCLK")):

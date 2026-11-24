@@ -19,15 +19,15 @@ estimates. Each line has a low and a high figure; the truth may still be outside
 | record, SSSS811101 | 1 | 0.30 | 0.70 | estimate; a lower Same Sky switch is listed at 0.27 euro |
 | S-82A1A, S-82A1AAG-A6T5S (variant to confirm) | 1 | 0.20 | 0.45 | estimate |
 | 32.768kHz 9pF, 9HT11-32.768KDZC-T | 1 | 0.25 | 0.45 | estimate |
-| 32MHz | 1 | 0.20 | 0.40 | estimate |
-| 2.4 GHz | 1 | 0.15 | 0.40 | estimate |
-| N-MOSFET | 4 | 0.12 | 0.32 | estimate |
+| 32MHz, CX2016DB32000D0FLJCC | 1 | 0.20 | 0.40 | estimate |
+| 2.4 GHz, ANT1608LL14R2400A | 1 | 0.15 | 0.40 | estimate |
+| N-MOSFET, PMZB290UNE2 | 4 | 0.12 | 0.32 | estimate |
 | 5.5V bidirectional, ESD230-B1-W0201 | 3 | 0.12 | 0.30 | estimate |
 | tactile, EVQP7J01P | 1 | 0.18 | 0.30 | DigiKey, its sibling EVQ-P7A01P 0.18 at 500 |
 | red, 156125RS75000 | 1 | 0.10 | 0.30 | estimate |
 | radio matching parts | 5 | 0.10 | 0.25 | estimate, each of the five matching parts |
-| 2.2uH | 1 | 0.08 | 0.20 | estimate |
-| 4.7uH | 1 | 0.03 | 0.08 | estimate |
+| 2.2uH, VLS201610HBX-2R2M-1 | 1 | 0.08 | 0.20 | estimate |
+| 4.7uH, PLEA67BCA4R7M-1PT00 | 1 | 0.03 | 0.08 | estimate |
 | 10k NTC | 1 | 0.02 | 0.05 | estimate |
 | Schottky, RB521ZS-30 | 1 | 0.02 | 0.05 | estimate |
 | ferrite bead | 1 | 0.01 | 0.03 | estimate |
