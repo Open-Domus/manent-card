@@ -274,8 +274,24 @@ What is done:
 - The rules in the project file are an ordinary fabricator's: 0.1 mm track and gap,
   0.4 mm vias with a 0.2 mm hole. They are an assumption, not a quote.
 
-What is not done: **no track is routed.** All 184 connections are still open and the
-ground plane is not poured. The placement is a machine's first arrangement. The footprints
+- **The board is routed.** `make route` gives it to Freerouting and brings the result back;
+  KiCad's check then finds no rule broken and no connection open. Signals run on the top
+  layer, the second inner layer and, a little, the bottom: 811 segments, 1.56 m in all,
+  129 vias. The first inner layer is ground only; no signal runs on it.
+- The router is not given the ground. Before it starts, a script puts a via beside the
+  ground pad of each small part, so that the router goes around them. After it, the two
+  outer layers are poured with ground and joined to the plane by 263 vias, each one kept
+  only if KiCad's check accepts it.
+- The radio line is 0.205 mm wide, 50 ohm over a 0.1 mm prepreg on the assumed stack, with
+  no pour beside it on the top layer. Supply tracks are 0.2 mm, the rest 0.1 mm.
+- The route kept is in `electrical/kicad/card.ses` and `stitch.json`, and `make board`
+  rebuilds the board from them. The router gives a different result each time, so
+  `make route` is not part of `make all`; after a change to the circuit or the placement
+  it must be run again.
+
+What is not done: the routing is a machine's, and so is the placement. Nobody has looked at
+the power loops, the crystal's surroundings or the return paths, and the board's stack is
+assumed, not quoted. The footprints
 of the switch, the button, the light and the call sensor are drawn from their makers'
 drawings; those of the antenna and the cell tabs are placeholders until those are chosen.
 Protection diodes are placed at their pads. The board is five times longer than it is wide and

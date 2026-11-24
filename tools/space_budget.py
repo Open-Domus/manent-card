@@ -25,7 +25,7 @@ o = ["# Space budget", "",
      "- Every part the card decides has a place on the board and none overlaps another or a keep-out (antenna",
      f"  corner, light window, microphone gaskets). The two QFN chips keep {S.FINE_PITCH_MARGIN} clear.",
      f"- The other parts are counted here by area, each with {S.PART_SPACING} of spacing, and may take at most {S.PACKING:.0%} of the",
-     "  free board. Their actual places are in the board file; nothing here checks that the tracks can be routed.",
+     "  free board. Their actual places are in the board file; the tracks are routed there, not checked here.",
      "- Nothing here checks stiffness: whether the two skins keep a bent card from bending the cell.", ""]
 for key, e in rep["envelopes"].items():
     adopted = " (adopted)" if key == rep["adopted"] else ""

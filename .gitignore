@@ -11,4 +11,11 @@ electrical/out/netlist.xml
 electrical/out/drc.json
 electrical/out/board.json
 electrical/out/pads.json
+electrical/out/tracks.json
+electrical/out/card.dsn
+electrical/out/card.ses
+electrical/out/route.log
+electrical/out/try.json
+electrical/out/stitch.json
 mechanical/out/*.step
+electrical/out/pre.json

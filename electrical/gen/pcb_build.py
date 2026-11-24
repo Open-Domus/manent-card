@@ -75,31 +75,25 @@ def note(text, x, y, layer, size=0.5):
     board.Add(t)
 
 
-def zone(points, layer=None, net=None, name=""):
+def ground_plane(points):
+    """Ground on the first inner layer."""
     z = pcbnew.ZONE(board)
-    z.SetZoneName(name)
+    z.SetZoneName("ground plane")
     o = z.Outline()
     o.NewOutline()
     for x, y in points:
         o.Append(mm(x), mm(y))
-    if net:
-        z.SetLayer(layer)
-        z.SetNet(nets[net])
-        z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
-        z.SetMinThickness(mm(0.1))
-        z.SetLocalClearance(mm(0.15))
-        z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
-    else:                                   # rule area: no poured copper
-        z.SetIsRuleArea(True)
-        z.SetLayerSet(pcbnew.LSET.AllCuMask(4))
-        z.SetDoNotAllowZoneFills(True)
-        z.SetDoNotAllowTracks(False), z.SetDoNotAllowVias(False), z.SetDoNotAllowPads(False)
-        z.SetDoNotAllowFootprints(False)
+    z.SetLayer(pcbnew.In1_Cu)
+    z.SetNet(nets["GND"])
+    z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+    z.SetMinThickness(mm(0.1))
+    z.SetLocalClearance(mm(0.15))
+    z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
     board.Add(z)
-    return z
 
 
 edge = outline_points()
+plane = outline_points(0.3)
 for a, b in zip(edge, edge[1:] + edge[:1]):
     line(a, b, pcbnew.Edge_Cuts)
 for k in data["keepouts"]:
@@ -109,10 +103,14 @@ for k in data["keepouts"]:
         line(a, b, pcbnew.Dwgs_User, 0.03)
     note(k["name"], (x0 + x1) / 2, y0 - 0.35, pcbnew.Cmts_User, 0.3)
     if k["name"].startswith("antenna"):
-        zone([(x0 - 1, y0 - 1), (x1, y0 - 1), (x1, y1), (x0 - 1, y1)], name="no copper under the antenna")
+        # No ground under the antenna: the plane's outline steps around that corner, which is the
+        # last one outline_points() draws. A notch, not a hole or a rule area: the autorouter reads
+        # a rule area as "no tracks" and does not see holes.
+        assert (x0, y0) == (0.0, 0.0)
+        plane = [q for q in plane if not (q[0] < x1 and q[1] < y1)] + [(0.3, y1), (x1, y1), (x1, 0.3)]
 note("Top copper carries the parts and faces the phone, bottom copper lies under the front skin. In1: ground. In2: signals.",
      L / 2, -1.2, pcbnew.Cmts_User, 0.5)
-zone(outline_points(0.3), pcbnew.In1_Cu, "GND", "ground plane")
+ground_plane(plane)
 
 out = HERE / "kicad" / (data["project"] + ".kicad_pcb")
 pcbnew.SaveBoard(str(out), board)

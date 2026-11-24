@@ -1,6 +1,6 @@
 #!/bin/sh
 # Run KiCad on the generated design: the installed one if present, otherwise the official
-# container (docker pull kicad/kicad:10.0).   tools/kicad.sh schematic | board | check
+# container (docker pull kicad/kicad:10.0).   tools/kicad.sh schematic | place | board | check
 set -e
 cd "$(dirname "$0")/../electrical"
 mkdir -p out
@@ -24,8 +24,12 @@ schematic)
   run kicad-cli sch export netlist --format kicadxml -o ../out/netlist.xml card.kicad_sch
   run kicad-cli sch export pdf -o ../out/schematic.pdf card.kicad_sch
   ;;
+place)
+  py gen/pcb_build.py
+  ;;
 board)
   py gen/pcb_build.py
+  if [ -f kicad/card.ses ]; then py gen/pcb_route.py import kicad/card.ses; py gen/pcb_stitch.py apply kicad/stitch.json; fi
   check
   ;;
 check)

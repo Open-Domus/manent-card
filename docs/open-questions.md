@@ -72,7 +72,8 @@ the order in which a wrong answer would cost most:
 
 ## Not designed yet
 
-Board routing (parts are placed, no track is drawn) and a review of the placement; the
+A review by eye of the board's placement and routing (both are a script's; KiCad finds no
+rule broken); the
 frame and the two skins, their glue line and seal; the hollow and slot of the switch, the button cap, the posts, the clear
 insert of the light, the microphone gaskets and membranes, the pad under the call sensor;
 the sleeve with its magnets; the charger; the antenna; firmware changes against

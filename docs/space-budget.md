@@ -18,7 +18,7 @@ are trade size codes with estimated capacities, not a supplier's drawing.
 - Every part the card decides has a place on the board and none overlaps another or a keep-out (antenna
   corner, light window, microphone gaskets). The two QFN chips keep 0.3 clear.
 - The other parts are counted here by area, each with 0.15 of spacing, and may take at most 50% of the
-  free board. Their actual places are in the board file; nothing here checks that the tracks can be routed.
+  free board. Their actual places are in the board file; the tracks are routed there, not checked here.
 - Nothing here checks stiffness: whether the two skins keep a bent card from bending the cell.
 
 ## Envelope A-card (adopted): 85.6 x 54.0 x 3.5

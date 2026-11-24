@@ -87,7 +87,7 @@ calculation made. None of it is a measurement.
 
 ## Not checked at all
 
-Routing, because there is none: power loops, the crystal's guard, the antenna feed, return
-paths. The supply filtering of the microcontroller, taken from the ring. Tolerances: every
+The routing, beyond KiCad's rules: it is an autorouter's, and nobody has looked at the
+power loops, the crystal's guard, the antenna feed or the return paths. The supply filtering of the microcontroller, taken from the ring. Tolerances: every
 gap in the fit model is nominal. Electromagnetic compatibility, safety of the cell,
 drop, and anything that needs the thing in a hand.

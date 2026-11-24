@@ -102,7 +102,7 @@ def test_both_nordic_chips_are_the_qfn_versions():
     assert "QFN-48" in fps["nRF54L15"] and "QFN-32" in fps["nPM1300"]
 
 
-def test_board_has_every_part_placed_without_rule_violations():
+def test_board_is_complete_and_breaks_no_rule():
     import json
     drc = NETLIST.with_name("drc.json")
     if not drc.exists():
@@ -110,8 +110,44 @@ def test_board_has_every_part_placed_without_rule_violations():
     report = json.loads(drc.read_text())
     assert report["violations"] == []
     assert report["schematic_parity"] == []       # same parts, footprints and nets as the schematic
-    # The board is placed, not routed: every connection is still open.
-    assert len(report["unconnected_items"]) > 100
+    # The tracks are in electrical/kicad/card.ses. If the placement changed since they were
+    # drawn, connections open up here: run `make route` again.
+    assert report["unconnected_items"] == []
+
+
+def _tracks():
+    import json
+    path = NETLIST.with_name("tracks.json")
+    if not path.exists():
+        pytest.skip("run `make board` first")
+    return json.loads(path.read_text())
+
+
+def _share_at_width(nets, width):
+    rows = [r for r in _tracks() if r[0] in nets]
+    total = sum(r[3] for r in rows)
+    assert total > 0
+    return sum(r[3] for r in rows if r[2] >= width - 1e-6) / total
+
+
+def test_radio_line_width_is_fifty_ohms_on_the_assumed_stack():
+    from gen.board import STACK, microstrip_ohms, rf_width
+    assert 0.15 < rf_width() < 0.25
+    assert microstrip_ohms(rf_width(), STACK["prepreg_mm"], STACK["er"]) == pytest.approx(50, abs=1.5)
+
+
+def test_no_signal_runs_on_the_ground_layer():
+    assert [r[0] for r in _tracks() if r[1] == "In1.Cu"] == []
+
+
+def test_radio_line_is_drawn_at_its_width():
+    from gen.board import RF_NETS, rf_width
+    assert _share_at_width(RF_NETS, rf_width()) > 0.9
+
+
+def test_supply_tracks_are_wide():
+    from gen.board import POWER_NETS, POWER_WIDTH
+    assert _share_at_width(POWER_NETS, POWER_WIDTH) > 0.9
 
 
 def test_kicad_put_every_pad_where_the_placer_assumed():
