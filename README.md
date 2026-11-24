@@ -8,6 +8,8 @@ sibling of the ring in `manent-ring` and of the band in `manent-band`, in the fo
 Plaud Note and of Amazon's Bee Eclipse. Firmware and radio protocol live in the
 `mnemo-band` repository.
 
+Public page: [manentlabs.it/en/card/](https://manentlabs.it/en/card/) (English), [manentlabs.it/card/](https://manentlabs.it/card/) (Italian).
+
 Nothing here has been built or measured. This is a first design on paper, checked by
 scripts. Its choices are made and each says what would overturn it.
 
